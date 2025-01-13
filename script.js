@@ -1,28 +1,29 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const newsSection = document.querySelector(".news-list");
+// Fetch JSON data and render news
+fetch('news.json')
+    .then(response => response.json())
+    .then(data => {
+        const newsContainer = document.getElementById('news-container');
+        data.forEach(news => {
+            const newsItem = document.createElement('div');
+            newsItem.classList.add('news-item');
 
-    // 從 JSON 文件加載新聞數據
-    fetch("news.json")
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("無法加載新聞數據");
-            }
-            return response.json();
-        })
-        .then(newsData => {
-            // 動態生成新聞列表
-            newsData.forEach(news => {
-                const article = document.createElement("article");
-                article.innerHTML = `
-                    <h3>${news.title}</h3>
-                    <p>${news.content}</p>
-                    <a href="${news.link}">閱讀更多</a>
-                `;
-                newsSection.appendChild(article);
-            });
-        })
-        .catch(error => {
-            console.error("新聞加載失敗:", error);
-            newsSection.innerHTML = `<p>抱歉，無法加載新聞。</p>`;
+            // Render title
+            const title = document.createElement('h2');
+            title.textContent = news.title;
+            newsItem.appendChild(title);
+
+            // Render content with paragraph breaks
+            const content = document.createElement('div');
+            content.innerHTML = news.content.split('\n\n').map(paragraph => `<p>${paragraph}</p>`).join('');
+            newsItem.appendChild(content);
+
+            // Render link
+            const link = document.createElement('a');
+            link.href = news.link;
+            link.textContent = '閱讀更多';
+            newsItem.appendChild(link);
+
+            newsContainer.appendChild(newsItem);
         });
-});
+    })
+    .catch(error => console.error('Error fetching news:', error));
