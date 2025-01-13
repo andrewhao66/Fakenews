@@ -76,6 +76,11 @@ header nav ul li a {
 
 .news-list article h3 {
     font-size: 1.5rem;
+    margin-bottom:
+    0.5rem;
+}
+
+.news-list article p {
     margin-bottom: 0.5rem;
 }
 
