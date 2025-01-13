@@ -1,0 +1,17 @@
+[
+    {
+        "title": "新聞標題 1",
+        "content": "這是一則假的新聞內容，請勿當真。",
+        "link": "#details"
+    },
+    {
+        "title": "新聞標題 2",
+        "content": "這是另一則假的新聞內容，非常有趣。",
+        "link": "#details"
+    },
+    {
+        "title": "新聞標題 3",
+        "content": "這是一則新增的新聞內容，充滿創意。",
+        "link": "#details"
+    }
+]
