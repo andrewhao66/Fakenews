@@ -1,0 +1,105 @@
+/* Reset 基本樣式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 背景與字體 */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+/* 頁首樣式 */
+header {
+    background: #222;
+    color: #fff;
+    padding: 1rem 0;
+    text-align: center;
+}
+
+header .logo h1 {
+    font-size: 2.5rem;
+}
+
+header nav ul {
+    list-style: none;
+    margin-top: 0.5rem;
+}
+
+header nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+header nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+/* 橫幅樣式 */
+.banner {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    color: #fff;
+}
+
+.banner h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+/* 新聞列表樣式 */
+.news-list {
+    padding: 2rem;
+    background: #fff;
+}
+
+.news-list h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.news-list article {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #f9f9f9;
+}
+
+.news-list article h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.news-list article a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.news-list article a:hover {
+    text-decoration: underline;
+}
+
+/* 關於我們樣式 */
+#about {
+    padding: 2rem;
+    background: #f4f4f9;
+    text-align: center;
+}
+
+/* 頁尾樣式 */
+footer {
+    text-align: center;
+    padding: 1rem;
+    background: #222;
+    color: #fff;
+    margin-top: 2rem;
+}
