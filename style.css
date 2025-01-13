@@ -156,3 +156,97 @@ footer {
 .banner, .news-list, #about {
     animation: fadeIn 0.8s ease-out;
 }
+/* 原有的樣式保持不變，在 .news-list 區塊後添加以下樣式 */
+
+/* 新聞文章樣式 */
+.news-list article {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.news-list article:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.news-list article:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.news-list h3 {
+    font-size: 1.4rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+.news-list p {
+    color: #666;
+    margin-bottom: 1.2rem;
+    line-height: 1.8;
+    text-align: justify;
+}
+
+.news-list a {
+    display: inline-block;
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 0;
+    position: relative;
+}
+
+.news-list a::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #3498db;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.news-list a:hover::after {
+    transform: scaleX(1);
+}
+
+/* 響應式調整 */
+@media (max-width: 768px) {
+    .news-list article {
+        padding: 1rem;
+    }
+
+    .news-list h3 {
+        font-size: 1.2rem;
+    }
+
+    .news-list p {
+        font-size: 0.95rem;
+    }
+
+    .news-list a {
+        font-size: 0.9rem;
+    }
+}
+
+/* 加載動畫 */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.news-list article {
+    animation: slideIn 0.5s ease-out forwards;
+    animation-delay: calc(var(--article-index, 0) * 0.1s);
+}
