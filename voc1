@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>單字學習與測驗</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        #game-container { max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9; }
+        button { margin: 10px; padding: 10px; font-size: 16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>單字學習與測驗</h1>
+        <button onclick="startLearning()">開始學習模式</button>
+        <button onclick="startTest()">開始測驗模式</button>
+        <hr>
+        <p id="question">請選擇一種模式開始</p>
+        <p id="definition"></p>
+        <p id="chinese-definition"></p>
+        <button onclick="checkAnswer(0)" id="btn0"></button>
+        <button onclick="checkAnswer(1)" id="btn1"></button>
+        <button onclick="checkAnswer(2)" id="btn2"></button>
+        <p id="result"></p>
+        <p>分數: <span id="score">0</span></p>
+        <button onclick="nextStep()" id="next-btn">下一步</button>
+    </div>
+
+    <script>
+        const words = [
+            { word: "Demonstration", definition: "A protest; a large gathering of people for a common cause", chinese: "示威遊行" },
+            { word: "Emancipation", definition: "Freedom; liberation from slavery", chinese: "解放，獲得自由" },
+            { word: "Score", definition: "Twenty years", chinese: "二十年" },
+            { word: "Manacles", definition: "Chains; handcuffs", chinese: "手銬，鐐銬" },
+            { word: "Segregation", definition: "Separation; the practice of keeping different groups apart", chinese: "隔離，種族隔離" },
+            { word: "Discrimination", definition: "Prejudice; hatred or unequal treatment", chinese: "歧視，不公平待遇" },
+            { word: "Promissory note", definition: "A promise or guarantee for something", chinese: "本票，承諾書" },
+            { word: "Bankrupt", definition: "Without money; broke; ruined", chinese: "破產" },
+            { word: "Tranquility", definition: "Peace; calm; ease", chinese: "寧靜，平靜" },
+            { word: "Degenerate", definition: "To grow worse; to fall apart", chinese: "惡化，退化" },
+            { word: "Militancy", definition: "Activism; the old blows", chinese: "戰鬥性，激進主義" },
+            { word: "Brutality", definition: "Extreme violence; oppressive force", chinese: "殘暴，暴行" },
+            { word: "Mobility", definition: "Freedom of movement", chinese: "流動性，行動能力" },
+            { word: "Ghetto", definition: "A very poor neighborhood designated for certain groups; a slum", chinese: "貧民區" },
+            { word: "Dignity", definition: "Pride; self-respect", chinese: "尊嚴，自尊" },
+            { word: "Justice", definition: "Correctness; fairness; the right way", chinese: "正義，公平" },
+            { word: "Righteousness", definition: "Moral goodness", chinese: "正直，公正" }
+        ];
+
+        let score = 0;
+        let mode = "";
+        let currentIndex = 0;
+        let currentSet = [];
+        let quizQuestions = [];
+        let step = 0;
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function startLearning() {
+            mode = "learning";
+            score = 0;
+            currentIndex = 0;
+            step = 0;
+            shuffle(words);
+            nextStep();
+        }
+
+        function startTest() {
+            mode = "test";
+            score = 0;
+            shuffle(words);
+            quizQuestions = words.slice(0, 10);
+            loadQuiz();
+        }
+
+        function nextStep() {
+            if (mode !== "learning") return;
+            
+            if (step < 4 && currentIndex < words.length) {
+                let wordObj = words[currentIndex++];
+                currentSet.push(wordObj);
+                document.getElementById("question").textContent = `單字: ${wordObj.word}`;
+                document.getElementById("definition").textContent = `英文定義: ${wordObj.definition}`;
+                document.getElementById("chinese-definition").textContent = `中文定義: ${wordObj.chinese}`;
+                document.getElementById("result").textContent = "";
+                hideButtons();
+                step++;
+            } else if (step === 4) {
+                shuffle(currentSet);
+                quizQuestions = [currentSet[0], currentSet[1]];
+                step++;
+                loadQuiz();
+            } else if (step >= 5) {
+                step = 0;
+                currentSet = [];
+                quizQuestions = [];
+                nextStep();
+            }
+        }
+
+        function loadQuiz() {
+            if (quizQuestions.length === 0) {
+                document.getElementById("result").textContent = "測驗完成！請點擊下一步";
+                return;
+            }
+
+            let wordObj = quizQuestions.pop();
+            document.getElementById("question").textContent = `單字: ${wordObj.word}`;
+            document.getElementById("definition").textContent = "";
+            document.getElementById("chinese-definition").textContent = "";
+
+            let otherDefinitions = words.filter(w => w.word !== wordObj.word).map(w => w.definition);
+            shuffle(otherDefinitions);
+            let options = [wordObj.definition, otherDefinitions[0], otherDefinitions[1]];
+            shuffle(options);
+
+            for (let i = 0; i < 3; i++) {
+                document.getElementById(`btn${i}`).textContent = options[i];
+                document.getElementById(`btn${i}`).style.display = "inline-block";
+            }
+        }
+
+        function checkAnswer(selectedIndex) {
+            let currentWord = document.getElementById("question").textContent.replace("單字: ", "");
+            let correctWordObj = words.find(w => w.word === currentWord);
+            let selectedOption = document.getElementById(`btn${selectedIndex}`).textContent;
+
+            if (selectedOption === correctWordObj.definition) {
+                score++;
+                document.getElementById("result").textContent = "✅ 答對了！";
+            } else {
+                document.getElementById("result").textContent = `❌ 錯了！正確答案是: ${correctWordObj.definition}`;
+            }
+
+            document.getElementById("score").textContent = score;
+            setTimeout(loadQuiz, 1000);
+        }
+
+        function hideButtons() {
+            for (let i = 0; i < 3; i++) {
+                document.getElementById(`btn${i}`).style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
