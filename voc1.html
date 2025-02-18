@@ -3,50 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>單字學習與測驗</title>
+    <title>進階單字學習與測驗</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
-        #game-container { max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9; }
-        button { margin: 10px; padding: 10px; font-size: 16px; cursor: pointer; }
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5f5f5;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+        }
+        
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        #game-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 30px;
+            border-radius: 15px;
+            background-color: white;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .mode-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .mode-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .word-card {
+            background-color: var(--secondary-color);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .memory-tip {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .answer-button {
+            background-color: white;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        .answer-button:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        #result {
+            font-size: 1.2em;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        #score {
+            font-size: 1.5em;
+            color: var(--primary-color);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
     </style>
 </head>
 <body>
     <div id="game-container">
-        <h1>單字學習與測驗</h1>
-        <button onclick="startLearning()">開始學習模式</button>
-        <button onclick="startTest()">開始測驗模式</button>
-        <hr>
-        <p id="question">請選擇一種模式開始</p>
-        <p id="definition"></p>
-        <p id="chinese-definition"></p>
-        <button onclick="checkAnswer(0)" id="btn0"></button>
-        <button onclick="checkAnswer(1)" id="btn1"></button>
-        <button onclick="checkAnswer(2)" id="btn2"></button>
+        <h1>進階單字學習與測驗</h1>
+        <button class="mode-button" onclick="startLearning()">開始學習模式</button>
+        <button class="mode-button" onclick="startTest()">開始測驗模式</button>
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        <div class="word-card fade-in">
+            <p id="question" style="font-size: 1.5em; font-weight: bold;">請選擇一種模式開始</p>
+            <p id="definition"></p>
+            <p id="chinese-definition"></p>
+            <div id="memory-tip" class="memory-tip" style="display: none;"></div>
+        </div>
+        <div class="buttons-container">
+            <button onclick="checkAnswer(0)" id="btn0" class="answer-button"></button>
+            <button onclick="checkAnswer(1)" id="btn1" class="answer-button"></button>
+            <button onclick="checkAnswer(2)" id="btn2" class="answer-button"></button>
+        </div>
         <p id="result"></p>
-        <p>分數: <span id="score">0</span></p>
-        <button onclick="nextStep()" id="next-btn">下一步</button>
+        <p>學習進度: <span id="score">0</span></p>
+        <button onclick="nextStep()" id="next-btn" class="mode-button">下一步</button>
     </div>
 
     <script>
-        const words = [
-            { word: "Demonstration", definition: "A protest; a large gathering of people for a common cause", chinese: "示威遊行" },
-            { word: "Emancipation", definition: "Freedom; liberation from slavery", chinese: "解放，獲得自由" },
-            { word: "Score", definition: "Twenty years", chinese: "二十年" },
-            { word: "Manacles", definition: "Chains; handcuffs", chinese: "手銬，鐐銬" },
-            { word: "Segregation", definition: "Separation; the practice of keeping different groups apart", chinese: "隔離，種族隔離" },
-            { word: "Discrimination", definition: "Prejudice; hatred or unequal treatment", chinese: "歧視，不公平待遇" },
-            { word: "Promissory note", definition: "A promise or guarantee for something", chinese: "本票，承諾書" },
-            { word: "Bankrupt", definition: "Without money; broke; ruined", chinese: "破產" },
-            { word: "Tranquility", definition: "Peace; calm; ease", chinese: "寧靜，平靜" },
-            { word: "Degenerate", definition: "To grow worse; to fall apart", chinese: "惡化，退化" },
-            { word: "Militancy", definition: "Activism; the old blows", chinese: "戰鬥性，激進主義" },
-            { word: "Brutality", definition: "Extreme violence; oppressive force", chinese: "殘暴，暴行" },
-            { word: "Mobility", definition: "Freedom of movement", chinese: "流動性，行動能力" },
-            { word: "Ghetto", definition: "A very poor neighborhood designated for certain groups; a slum", chinese: "貧民區" },
-            { word: "Dignity", definition: "Pride; self-respect", chinese: "尊嚴，自尊" },
-            { word: "Justice", definition: "Correctness; fairness; the right way", chinese: "正義，公平" },
-            { word: "Righteousness", definition: "Moral goodness", chinese: "正直，公正" }
-        ];
+const words = [
+    { 
+        word: "Demonstration", 
+        definition: "A protest; a large gathering of people for a common cause", 
+        chinese: "示威遊行",
+        tip: "記憶技巧：Demo(展示) + stration(街道) → 在街道上展示訴求"
+    },
+    { 
+        word: "Emancipation", 
+        definition: "Freedom; liberation from slavery", 
+        chinese: "解放，獲得自由",
+        tip: "記憶技巧：E(出) + man(人) + cipation(狀態) → 人從受限制的狀態中出來"
+    },
+    { 
+        word: "Score", 
+        definition: "Twenty years", 
+        chinese: "二十年",
+        tip: "記憶技巧：聯想計分板上的分數，一個完整的計分週期為20分"
+    },
+    { 
+        word: "Manacle", 
+        definition: "Chains; handcuffs; shackles worn by a prisoner", 
+        chinese: "手銬；腳鐐",
+        tip: "記憶技巧：Man(手) + acle(束縛) → 束縛手的工具"
+    },
+    { 
+        word: "Segregation", 
+        definition: "Separation; the practice of keeping different groups apart", 
+        chinese: "隔離",
+        tip: "記憶技巧：Seg(分開) + regation(區域) → 將不同群體分開"
+    },
+    { 
+        word: "Discrimination", 
+        definition: "Prejudice; hatred or unequal treatment", 
+        chinese: "歧視",
+        tip: "記憶技巧：Dis(不) + crimination(區分) → 不公平的區分"
+    },
+    { 
+        word: "Promissory note", 
+        definition: "A promise or guarantee for something", 
+        chinese: "期票；本票",
+        tip: "記憶技巧：Promise(承諾) + note(票據) → 承諾付款的票據"
+    },
+    { 
+        word: "Bankrupt", 
+        definition: "Without money; broke; ruined", 
+        chinese: "破產",
+        tip: "記憶技巧：Bank(銀行) + rupt(破裂) → 銀行帳戶破裂"
+    },
+    { 
+        word: "Tranquility", 
+        definition: "Peace; calm; ease", 
+        chinese: "平靜",
+        tip: "記憶技巧：Tranquil(平靜的) + ity(狀態) → 平靜的狀態"
+    },
+    { 
+        word: "Degenerate", 
+        definition: "To grow worse, to fall apart", 
+        chinese: "退化；惡化",
+        tip: "記憶技巧：De(向下) + generate(產生) → 向下產生，變壞"
+    },
+    { 
+        word: "Militancy", 
+        definition: "Activism; political and social awareness", 
+        chinese: "戰鬥性；激進",
+        tip: "記憶技巧：Militant(激進的) + cy(狀態) → 激進的狀態"
+    },
+    { 
+        word: "Brutality", 
+        definition: "Extreme violence; oppressive force", 
+        chinese: "殘暴",
+        tip: "記憶技巧：Brute(野獸) + ality(性質) → 野獸般的性質"
+    },
+    { 
+        word: "Mobility", 
+        definition: "Freedom of movement", 
+        chinese: "移動性",
+        tip: "記憶技巧：Mobile(移動的) + ity(性質) → 移動的性質"
+    },
+    { 
+        word: "Ghetto", 
+        definition: "A very poor neighborhood designated for a certain group; a slum", 
+        chinese: "貧民窟",
+        tip: "記憶技巧：Ghetto(貧民窟) → 聯想到貧困的區域"
+    },
+    { 
+        word: "Dignity", 
+        definition: "Pride; self-respect", 
+        chinese: "尊嚴",
+        tip: "記憶技巧：Dign(價值) + ity(狀態) → 有價值的狀態"
+    },
+    { 
+        word: "Justice", 
+        definition: "Correctness; fairness; the right way", 
+        chinese: "正義",
+        tip: "記憶技巧：Just(公正的) + ice(狀態) → 公正的狀態"
+    },
+    { 
+        word: "Righteousness", 
+        definition: "Moral goodness", 
+        chinese: "正直",
+        tip: "記憶技巧：Right(正確的) + eousness(狀態) → 正確的狀態"
+    }
+];
 
         let score = 0;
         let mode = "";
@@ -54,6 +257,12 @@
         let currentSet = [];
         let quizQuestions = [];
         let step = 0;
+        let totalSteps = words.length * 4;
+
+        function updateProgress() {
+            const progress = (step / totalSteps) * 100;
+            document.getElementById("progress").style.width = `${progress}%`;
+        }
 
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -69,6 +278,7 @@
             step = 0;
             shuffle(words);
             nextStep();
+            updateProgress();
         }
 
         function startTest() {
@@ -77,6 +287,7 @@
             shuffle(words);
             quizQuestions = words.slice(0, 10);
             loadQuiz();
+            updateProgress();
         }
 
         function nextStep() {
@@ -88,25 +299,35 @@
                 document.getElementById("question").textContent = `單字: ${wordObj.word}`;
                 document.getElementById("definition").textContent = `英文定義: ${wordObj.definition}`;
                 document.getElementById("chinese-definition").textContent = `中文定義: ${wordObj.chinese}`;
+                
+                // 顯示記憶技巧
+                const memoryTip = document.getElementById("memory-tip");
+                memoryTip.style.display = "block";
+                memoryTip.textContent = wordObj.tip || "練習記憶這個單字的拼寫和含義";
+                
                 document.getElementById("result").textContent = "";
                 hideButtons();
                 step++;
+                updateProgress();
             } else if (step === 4) {
                 shuffle(currentSet);
                 quizQuestions = [currentSet[0], currentSet[1]];
                 step++;
                 loadQuiz();
+                updateProgress();
             } else if (step >= 5) {
                 step = 0;
                 currentSet = [];
                 quizQuestions = [];
                 nextStep();
+                updateProgress();
             }
         }
 
         function loadQuiz() {
             if (quizQuestions.length === 0) {
                 document.getElementById("result").textContent = "測驗完成！請點擊下一步";
+                document.getElementById("memory-tip").style.display = "none";
                 return;
             }
 
@@ -114,6 +335,7 @@
             document.getElementById("question").textContent = `單字: ${wordObj.word}`;
             document.getElementById("definition").textContent = "";
             document.getElementById("chinese-definition").textContent = "";
+            document.getElementById("memory-tip").style.display = "none";
 
             let otherDefinitions = words.filter(w => w.word !== wordObj.word).map(w => w.definition);
             shuffle(otherDefinitions);
@@ -121,8 +343,10 @@
             shuffle(options);
 
             for (let i = 0; i < 3; i++) {
-                document.getElementById(`btn${i}`).textContent = options[i];
-                document.getElementById(`btn${i}`).style.display = "inline-block";
+                const btn = document.getElementById(`btn${i}`);
+                btn.textContent = options[i];
+                btn.style.display = "block";
+                btn.className = "answer-button fade-in";
             }
         }
 
@@ -134,12 +358,18 @@
             if (selectedOption === correctWordObj.definition) {
                 score++;
                 document.getElementById("result").textContent = "✅ 答對了！";
+                document.getElementById("result").style.color = "var(--success-color)";
             } else {
                 document.getElementById("result").textContent = `❌ 錯了！正確答案是: ${correctWordObj.definition}`;
+                document.getElementById("result").style.color = "var(--error-color)";
+                
+                // 顯示記憶技巧作為復習
+                document.getElementById("memory-tip").style.display = "block";
+                document.getElementById("memory-tip").textContent = correctWordObj.tip;
             }
 
             document.getElementById("score").textContent = score;
-            setTimeout(loadQuiz, 1000);
+            setTimeout(loadQuiz, 2000);
         }
 
         function hideButtons() {
