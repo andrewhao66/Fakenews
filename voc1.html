@@ -11,7 +11,7 @@
             --success-color: #28a745;
             --error-color: #dc3545;
         }
-        
+
         body {
             font-family: 'Microsoft JhengHei', Arial, sans-serif;
             margin: 0;
@@ -130,13 +130,13 @@
             <div class="progress" id="progress"></div>
         </div>
         <div class="word-card fade-in">
-        <p style="font-size: 1.5em; font-weight: bold;">    
-        <span id="question">請選擇一種模式開始</span>
-        <button onclick="speakWord()" class="mode-button" style="padding: 8px 15px; font-size: 14px; margin-left: 10px;">🔊</button>
-        </p>
-        <p id="definition"></p>
-        <p id="chinese-definition"></p>
-        <div id="memory-tip" class="memory-tip" style="display: none;"></div>
+            <p style="font-size: 1.5em; font-weight: bold;">
+                <span id="question">請選擇一種模式開始</span>
+                <button onclick="speakWord()" class="mode-button" style="padding: 8px 15px; font-size: 14px; margin-left: 10px;">🔊</button>
+            </p>
+            <p id="definition"></p>
+            <p id="chinese-definition"></p>
+            <div id="memory-tip" class="memory-tip" style="display: none;"></div>
         </div>
         <div class="buttons-container">
             <button onclick="checkAnswer(0)" id="btn0" class="answer-button"></button>
@@ -254,181 +254,175 @@ const words = [
     }
 ];
 
-let score = 0;
-let mode = "";
-let currentIndex = 0;
-let currentSet = [];
-let quizQuestions = [];
-let step = 0;
-let totalSteps = words.length * 4; // 總步驟數保持不變
+        let score = 0;
+        let mode = "";
+        let currentIndex = 0;
+        let currentSet = [];
+        let quizQuestions = [];
+        let step = 0;
+        let totalSteps = words.length * 4;
 
-function updateProgress() {
-    const progress = (step / totalSteps) * 100;
-    document.getElementById("progress").style.width = `${progress}%`;
-}
+        function updateProgress() {
+            const progress = (step / totalSteps) * 100;
+            document.getElementById("progress").style.width = `${progress}%`;
+        }
 
-function shuffle(array) { // 洗牌函數保持不變
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-}
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
 
-function startLearning() {
-    mode = "learning";
-    score = 0;
-    currentIndex = 0;
-    step = 0;
-    // 移除 shuffle(words); // 移除隨機排序，按照原始順序學習
-    nextStep();
-    updateProgress();
-}
+        function startLearning() {
+            mode = "learning";
+            score = 0;
+            currentIndex = 0;
+            step = 0;
+            nextStep();
+            updateProgress();
+        }
 
-function startTest() { // 測驗模式保持不變
-    mode = "test";
-    score = 0;
-    shuffle(words);
-    quizQuestions = words.slice(0, 10);
-    loadQuiz();
-    updateProgress();
-}
+        function startTest() {
+            mode = "test";
+            score = 0;
+            shuffle(words);
+            quizQuestions = words.slice(0, 10);
+            loadQuiz();
+            updateProgress();
+        }
 
-function nextStep() {
-    if (mode !== "learning") return;
+        function nextStep() {
+            if (mode !== "learning") return;
 
-    if (currentIndex < words.length) { // 學習模式改為依序學習所有單字
-        let wordObj = words[currentIndex];
-        currentSet.push(wordObj);
-        document.getElementById("question").textContent = `${wordObj.word}`; // 更新單字，移除 "單字: " 前綴
-        document.getElementById("definition").textContent = `英文定義: ${wordObj.definition}`;
-        document.getElementById("chinese-definition").textContent = `中文定義: ${wordObj.chinese}`;
+            if (currentIndex < words.length) {
+                let wordObj = words[currentIndex];
+                currentSet.push(wordObj);
+                document.getElementById("question").textContent = `${wordObj.word}`;
+                document.getElementById("definition").textContent = `英文定義: ${wordObj.definition}`;
+                document.getElementById("chinese-definition").textContent = `中文定義: ${wordObj.chinese}`;
 
-        // 顯示記憶技巧
-        const memoryTip = document.getElementById("memory-tip");
-        memoryTip.style.display = "block";
-        memoryTip.textContent = wordObj.tip || "練習記憶這個單字的拼寫和含義";
+                // 顯示記憶技巧
+                const memoryTip = document.getElementById("memory-tip");
+                memoryTip.style.display = "block";
+                memoryTip.textContent = wordObj.tip || "練習記憶這個單字的拼寫和含義";
 
-        document.getElementById("result").textContent = "";
-        hideButtons();
-        step++;
-        updateProgress();
-        currentIndex++; // 索引遞增，學習下一個單字
+                document.getElementById("result").textContent = "";
+                hideButtons();
+                step++;
+                updateProgress();
+                currentIndex++;
 
-        // 立即開始抽考
-        prepareQuizForCurrentWord();
+                prepareQuizForCurrentWord();
 
-    } else {
-        // 學習模式完成所有單字
-        document.getElementById("question").textContent = `學習模式完成！`;
-        document.getElementById("definition").textContent = "";
-        document.getElementById("chinese-definition").textContent = "";
-        document.getElementById("memory-tip").style.display = "none";
-        document.getElementById("result").textContent = "恭喜你完成了所有單字的學習！";
-        hideButtons();
-    }
-}
+            } else {
+                document.getElementById("question").textContent = `學習模式完成！`;
+                document.getElementById("definition").textContent = "";
+                document.getElementById("chinese-definition").textContent = "";
+                document.getElementById("memory-tip").style.display = "none";
+                document.getElementById("result").textContent = "恭喜你完成了所有單字的學習！";
+                hideButtons();
+            }
+        }
 
-function prepareQuizForCurrentWord() {
-    quizQuestions = []; // 清空題目
-    const learnedWordsForQuiz = currentSet.slice(0, currentSet.length -1 ); // 排除剛學的單字
+        function prepareQuizForCurrentWord() {
+            quizQuestions = [];
+            const learnedWordsForQuiz = currentSet.slice(0, currentSet.length -1 );
 
-    if (learnedWordsForQuiz.length >= 2) {
-        shuffle(learnedWordsForQuiz); // 隨機排序已學單字
-        quizQuestions = learnedWordsForQuiz.slice(0, 2); // 抽取前兩個作為考題
-    } else if (learnedWordsForQuiz.length === 1) {
-        quizQuestions = learnedWordsForQuiz.slice(0, 1); // 如果只有一個已學單字，就考一個
-    }
-    // 如果沒有已學單字 (learnedWordsForQuiz.length === 0)，則不進行測驗
+            if (learnedWordsForQuiz.length >= 2) {
+                shuffle(learnedWordsForQuiz);
+                quizQuestions = learnedWordsForQuiz.slice(0, 2);
+            } else if (learnedWordsForQuiz.length === 1) {
+                quizQuestions = learnedWordsForQuiz.slice(0, 1);
+            }
 
-    if (quizQuestions.length > 0) {
-        loadQuiz(); // 如果有考題，則載入測驗
-    } else {
-        // 如果沒有考題，可以顯示訊息或直接進入下一步 (這裡選擇直接下一步)
-        document.getElementById("result").textContent = "目前沒有已學單字可供測驗，請繼續學習下一個單字。";
-        setTimeout(nextStep, 2000); // 延遲後繼續下一個單字
-    }
-}
+            if (quizQuestions.length > 0) {
+                loadQuiz();
+            } else {
+                document.getElementById("result").textContent = "目前沒有已學單字可供測驗，請繼續學習下一個單字。";
+                setTimeout(nextStep, 2000);
+            }
+        }
 
 
-function loadQuiz() {
-    if (quizQuestions.length === 0 && mode === "learning") {
-        // 學習模式下，如果沒有 quizQuestions，表示是學習完單字後的等待測驗階段，不顯示 "測驗完成"
-        hideButtons();
-        return;
-    }
-    if (quizQuestions.length === 0 && mode === "test") { // 測驗模式保持原邏輯
-        document.getElementById("result").textContent = "測驗完成！請點擊下一步";
-        document.getElementById("memory-tip").style.display = "none";
-        return;
-    }
+        function loadQuiz() {
+            if (quizQuestions.length === 0 && mode === "learning") {
+                hideButtons();
+                return;
+            }
+            if (quizQuestions.length === 0 && mode === "test") {
+                document.getElementById("result").textContent = "測驗完成！請點擊下一步";
+                document.getElementById("memory-tip").style.display = "none";
+                return;
+            }
 
 
-    let wordObj = quizQuestions.pop();
-    document.getElementById("question").textContent = `單字: ${wordObj.word}`; // 恢復 "單字: " 前綴，因為是測驗
-    document.getElementById("definition").textContent = "";
-    document.getElementById("chinese-definition").textContent = "";
-    document.getElementById("memory-tip").style.display = "none";
+            let wordObj = quizQuestions.pop();
+            document.getElementById("question").textContent = `單字: ${wordObj.word}`;
+            document.getElementById("definition").textContent = "";
+            document.getElementById("chinese-definition").textContent = "";
+            document.getElementById("memory-tip").style.display = "none";
 
-    let otherDefinitions = words.filter(w => w.word !== wordObj.word).map(w => w.definition);
-    shuffle(otherDefinitions);
-    let options = [wordObj.definition, otherDefinitions[0], otherDefinitions[1]];
-    shuffle(options);
+            let otherDefinitions = words.filter(w => w.word !== wordObj.word).map(w => w.definition);
+            shuffle(otherDefinitions);
+            let options = [wordObj.definition, otherDefinitions[0], otherDefinitions[1]];
+            shuffle(options);
 
-    for (let i = 0; i < 3; i++) {
-        const btn = document.getElementById(`btn${i}`);
-        btn.textContent = options[i];
-        btn.style.display = "block";
-        btn.className = "answer-button fade-in";
-    }
-}
+            for (let i = 0; i < 3; i++) {
+                const btn = document.getElementById(`btn${i}`);
+                btn.textContent = options[i];
+                btn.style.display = "block";
+                btn.className = "answer-button fade-in";
+            }
+        }
 
-function checkAnswer(selectedIndex) {
-    let currentWord = document.getElementById("question").textContent.replace("單字: ", "");
-    let correctWordObj = words.find(w => w.word === currentWord);
-    let selectedOption = document.getElementById(`btn${selectedIndex}`).textContent;
+        function checkAnswer(selectedIndex) {
+            let currentWord = document.getElementById("question").textContent.replace("單字: ", "");
+            let correctWordObj = words.find(w => w.word === currentWord);
+            let selectedOption = document.getElementById(`btn${selectedIndex}`).textContent;
 
-    if (selectedOption === correctWordObj.definition) {
-        score++;
-        document.getElementById("result").textContent = "✅ 答對了！";
-        document.getElementById("result").style.color = "var(--success-color)";
-    } else {
-        document.getElementById("result").textContent = `❌ 錯了！正確答案是: ${correctWordObj.definition}`;
-        document.getElementById("result").style.color = "var(--error-color)";
+            if (selectedOption === correctWordObj.definition) {
+                score++;
+                document.getElementById("result").textContent = "✅ 答對了！";
+                document.getElementById("result").style.color = "var(--success-color)";
+            } else {
+                document.getElementById("result").textContent = `❌ 錯了！正確答案是: ${correctWordObj.definition}`;
+                document.getElementById("result").style.color = "var(--error-color)";
 
-        // 顯示記憶技巧作為復習
-        document.getElementById("memory-tip").style.display = "block";
-        document.getElementById("memory-tip").textContent = correctWordObj.tip;
-    }
+                // 顯示記憶技巧作為復習
+                document.getElementById("memory-tip").style.display = "block";
+                document.getElementById("memory-tip").textContent = correctWordObj.tip;
+            }
 
-    document.getElementById("score").textContent = score;
-    if (mode === "learning") {
-        setTimeout(nextStep, 2000); // 學習模式答題後延遲進入下一步 (繼續學習下一個單字)
-    } else {
-        setTimeout(loadQuiz, 2000); // 測驗模式答題後延遲載入下一個測驗題目 (保持原邏輯)
-    }
-}
+            document.getElementById("score").textContent = score;
+            if (mode === "learning") {
+                setTimeout(nextStep, 2000);
+            } else {
+                setTimeout(loadQuiz, 2000);
+            }
+        }
 
-function hideButtons() {
-    for (let i = 0; i < 3; i++) {
-        document.getElementById(`btn${i}`).style.display = "none`;
-    }
-}
+        function hideButtons() {
+            for (let i = 0; i < 3; i++) {
+                document.getElementById(`btn${i}`).style.display = "none";
+            }
+        }
 
-// TTS 功能
-function speakWord() {
-    const word = document.getElementById("question").textContent;
-    speak(word);
-}
+        // TTS 功能
+        function speakWord() {
+            const word = document.getElementById("question").textContent;
+            speak(word);
+        }
 
-function speak(text) {
-    if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US'; // 設定語言為英文 (美式)
-        speechSynthesis.speak(utterance);
-    } else {
-        alert('抱歉，您的瀏覽器不支援文字轉語音功能。');
-    }
-}
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                speechSynthesis.speak(utterance);
+            } else {
+                alert('抱歉，您的瀏覽器不支援文字轉語音功能。');
+            }
+        }
     </script>
 </body>
 </html>
