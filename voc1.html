@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>進階單字學習與測驗</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         :root {
             --primary-color: #4a90e2;
@@ -11,7 +12,7 @@
             --success-color: #28a745;
             --error-color: #dc3545;
         }
-        
+
         body {
             font-family: 'Microsoft JhengHei', Arial, sans-serif;
             margin: 0;
@@ -119,6 +120,24 @@
         .fade-in {
             animation: fadeIn 0.5s ease;
         }
+
+        /* 新增 TTS 按鈕樣式 */
+        .tts-button {
+            background: none; /* 透明背景 */
+            border: none;      /* 無邊框 */
+            color: var(--primary-color); /* 使用主題色 */
+            cursor: pointer;    /* 滑鼠游標為手形 */
+            padding: 0;         /* 移除內邊距 */
+            margin-left: 5px;   /* 與文字間隔 */
+            font-size: 0.9em;   /* 調整圖示大小 */
+            vertical-align: middle; /* 垂直居中對齊 */
+            opacity: 0.7;       /* 稍微降低不透明度，更柔和 */
+            transition: opacity 0.3s; /* 添加過渡效果 */
+        }
+
+        .tts-button:hover {
+            opacity: 1;         /* 滑鼠懸停時恢復不透明度 */
+        }
     </style>
 </head>
 <body>
@@ -130,9 +149,24 @@
             <div class="progress" id="progress"></div>
         </div>
         <div class="word-card fade-in">
-            <p id="question" style="font-size: 1.5em; font-weight: bold;">請選擇一種模式開始</p>
-            <p id="definition"></p>
-            <p id="chinese-definition"></p>
+            <p style="font-size: 1.5em; font-weight: bold;">
+                單字: <span id="question">請選擇一種模式開始</span>
+                <button class="tts-button" onclick="speakText(document.getElementById('question').textContent, 'en-US')">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </p>
+            <p>
+                英文定義: <span id="definition"></span>
+                <button class="tts-button" onclick="speakText(document.getElementById('definition').textContent, 'en-US')">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </p>
+            <p>
+                中文定義: <span id="chinese-definition"></span>
+                <button class="tts-button" onclick="speakText(document.getElementById('chinese-definition').textContent, 'zh-TW')">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </p>
             <div id="memory-tip" class="memory-tip" style="display: none;"></div>
         </div>
         <div class="buttons-container">
@@ -146,110 +180,110 @@
     </div>
 
     <script>
-const words = [
-    { 
-        word: "Demonstration", 
-        definition: "A protest; a large gathering of people for a common cause", 
-        chinese: "示威遊行",
-        tip: "記憶技巧：Demo(展示) + stration(街道) → 在街道上展示訴求"
-    },
-    { 
-        word: "Emancipation", 
-        definition: "Freedom; liberation from slavery", 
-        chinese: "解放，獲得自由",
-        tip: "記憶技巧：E(出) + man(人) + cipation(狀態) → 人從受限制的狀態中出來"
-    },
-    { 
-        word: "Score", 
-        definition: "Twenty years", 
-        chinese: "二十年",
-        tip: "記憶技巧：聯想計分板上的分數，一個完整的計分週期為20分"
-    },
-    { 
-        word: "Manacle", 
-        definition: "Chains; handcuffs; shackles worn by a prisoner", 
-        chinese: "手銬；腳鐐",
-        tip: "記憶技巧：Man(手) + acle(束縛) → 束縛手的工具"
-    },
-    { 
-        word: "Segregation", 
-        definition: "Separation; the practice of keeping different groups apart", 
-        chinese: "隔離",
-        tip: "記憶技巧：Seg(分開) + regation(區域) → 將不同群體分開"
-    },
-    { 
-        word: "Discrimination", 
-        definition: "Prejudice; hatred or unequal treatment", 
-        chinese: "歧視",
-        tip: "記憶技巧：Dis(不) + crimination(區分) → 不公平的區分"
-    },
-    { 
-        word: "Promissory note", 
-        definition: "A promise or guarantee for something", 
-        chinese: "期票；本票",
-        tip: "記憶技巧：Promise(承諾) + note(票據) → 承諾付款的票據"
-    },
-    { 
-        word: "Bankrupt", 
-        definition: "Without money; broke; ruined", 
-        chinese: "破產",
-        tip: "記憶技巧：Bank(銀行) + rupt(破裂) → 銀行帳戶破裂"
-    },
-    { 
-        word: "Tranquility", 
-        definition: "Peace; calm; ease", 
-        chinese: "平靜",
-        tip: "記憶技巧：Tranquil(平靜的) + ity(狀態) → 平靜的狀態"
-    },
-    { 
-        word: "Degenerate", 
-        definition: "To grow worse, to fall apart", 
-        chinese: "退化；惡化",
-        tip: "記憶技巧：De(向下) + generate(產生) → 向下產生，變壞"
-    },
-    { 
-        word: "Militancy", 
-        definition: "Activism; political and social awareness", 
-        chinese: "戰鬥性；激進",
-        tip: "記憶技巧：Militant(激進的) + cy(狀態) → 激進的狀態"
-    },
-    { 
-        word: "Brutality", 
-        definition: "Extreme violence; oppressive force", 
-        chinese: "殘暴",
-        tip: "記憶技巧：Brute(野獸) + ality(性質) → 野獸般的性質"
-    },
-    { 
-        word: "Mobility", 
-        definition: "Freedom of movement", 
-        chinese: "移動性",
-        tip: "記憶技巧：Mobile(移動的) + ity(性質) → 移動的性質"
-    },
-    { 
-        word: "Ghetto", 
-        definition: "A very poor neighborhood designated for a certain group; a slum", 
-        chinese: "貧民窟",
-        tip: "記憶技巧：Ghetto(貧民窟) → 聯想到貧困的區域"
-    },
-    { 
-        word: "Dignity", 
-        definition: "Pride; self-respect", 
-        chinese: "尊嚴",
-        tip: "記憶技巧：Dign(價值) + ity(狀態) → 有價值的狀態"
-    },
-    { 
-        word: "Justice", 
-        definition: "Correctness; fairness; the right way", 
-        chinese: "正義",
-        tip: "記憶技巧：Just(公正的) + ice(狀態) → 公正的狀態"
-    },
-    { 
-        word: "Righteousness", 
-        definition: "Moral goodness", 
-        chinese: "正直",
-        tip: "記憶技巧：Right(正確的) + eousness(狀態) → 正確的狀態"
-    }
-];
+        const words = [
+            {
+                word: "Demonstration",
+                definition: "A protest; a large gathering of people for a common cause",
+                chinese: "示威遊行",
+                tip: "記憶技巧：Demo(展示) + stration(街道) → 在街道上展示訴求"
+            },
+            {
+                word: "Emancipation",
+                definition: "Freedom; liberation from slavery",
+                chinese: "解放，獲得自由",
+                tip: "記憶技巧：E(出) + man(人) + cipation(狀態) → 人從受限制的狀態中出來"
+            },
+            {
+                word: "Score",
+                definition: "Twenty years",
+                chinese: "二十年",
+                tip: "記憶技巧：聯想計分板上的分數，一個完整的計分週期為20分"
+            },
+            {
+                word: "Manacle",
+                definition: "Chains; handcuffs; shackles worn by a prisoner",
+                chinese: "手銬；腳鐐",
+                tip: "記憶技巧：Man(手) + acle(束縛) → 束縛手的工具"
+            },
+            {
+                word: "Segregation",
+                definition: "Separation; the practice of keeping different groups apart",
+                chinese: "隔離",
+                tip: "記憶技巧：Seg(分開) + regation(區域) → 將不同群體分開"
+            },
+            {
+                word: "Discrimination",
+                definition: "Prejudice; hatred or unequal treatment",
+                chinese: "歧視",
+                tip: "記憶技巧：Dis(不) + crimination(區分) → 不公平的區分"
+            },
+            {
+                word: "Promissory note",
+                definition: "A promise or guarantee for something",
+                chinese: "期票；本票",
+                tip: "記憶技巧：Promise(承諾) + note(票據) → 承諾付款的票據"
+            },
+            {
+                word: "Bankrupt",
+                definition: "Without money; broke; ruined",
+                chinese: "破產",
+                tip: "記憶技巧：Bank(銀行) + rupt(破裂) → 銀行帳戶破裂"
+            },
+            {
+                word: "Tranquility",
+                definition: "Peace; calm; ease",
+                chinese: "平靜",
+                tip: "記憶技巧：Tranquil(平靜的) + ity(狀態) → 平靜的狀態"
+            },
+            {
+                word: "Degenerate",
+                definition: "To grow worse, to fall apart",
+                chinese: "退化；惡化",
+                tip: "記憶技巧：De(向下) + generate(產生) → 向下產生，變壞"
+            },
+            {
+                word: "Militancy",
+                definition: "Activism; political and social awareness",
+                chinese: "戰鬥性；激進",
+                tip: "記憶技巧：Militant(激進的) + cy(狀態) → 激進的狀態"
+            },
+            {
+                word: "Brutality",
+                definition: "Extreme violence; oppressive force",
+                chinese: "殘暴",
+                tip: "記憶技巧：Brute(野獸) + ality(性質) → 野獸般的性質"
+            },
+            {
+                word: "Mobility",
+                definition: "Freedom of movement",
+                chinese: "移動性",
+                tip: "記憶技巧：Mobile(移動的) + ity(性質) → 移動的性質"
+            },
+            {
+                word: "Ghetto",
+                definition: "A very poor neighborhood designated for a certain group; a slum",
+                chinese: "貧民窟",
+                tip: "記憶技巧：Ghetto(貧民窟) → 聯想到貧困的區域"
+            },
+            {
+                word: "Dignity",
+                definition: "Pride; self-respect",
+                chinese: "尊嚴",
+                tip: "記憶技巧：Dign(價值) + ity(狀態) → 有價值的狀態"
+            },
+            {
+                word: "Justice",
+                definition: "Correctness; fairness; the right way",
+                chinese: "正義",
+                tip: "記憶技巧：Just(公正的) + ice(狀態) → 公正的狀態"
+            },
+            {
+                word: "Righteousness",
+                definition: "Moral goodness",
+                chinese: "正直",
+                tip: "記憶技巧：Right(正確的) + eousness(狀態) → 正確的狀態"
+            }
+        ];
 
         let score = 0;
         let mode = "";
@@ -292,19 +326,19 @@ const words = [
 
         function nextStep() {
             if (mode !== "learning") return;
-            
+
             if (step < 4 && currentIndex < words.length) {
                 let wordObj = words[currentIndex++];
                 currentSet.push(wordObj);
-                document.getElementById("question").textContent = `單字: ${wordObj.word}`;
-                document.getElementById("definition").textContent = `英文定義: ${wordObj.definition}`;
-                document.getElementById("chinese-definition").textContent = `中文定義: ${wordObj.chinese}`;
-                
+                document.getElementById("question").textContent = `${wordObj.word}`;
+                document.getElementById("definition").textContent = `${wordObj.definition}`;
+                document.getElementById("chinese-definition").textContent = `${wordObj.chinese}`;
+
                 // 顯示記憶技巧
                 const memoryTip = document.getElementById("memory-tip");
                 memoryTip.style.display = "block";
                 memoryTip.textContent = wordObj.tip || "練習記憶這個單字的拼寫和含義";
-                
+
                 document.getElementById("result").textContent = "";
                 hideButtons();
                 step++;
@@ -332,7 +366,7 @@ const words = [
             }
 
             let wordObj = quizQuestions.pop();
-            document.getElementById("question").textContent = `單字: ${wordObj.word}`;
+            document.getElementById("question").textContent = `${wordObj.word}`;
             document.getElementById("definition").textContent = "";
             document.getElementById("chinese-definition").textContent = "";
             document.getElementById("memory-tip").style.display = "none";
@@ -351,7 +385,7 @@ const words = [
         }
 
         function checkAnswer(selectedIndex) {
-            let currentWord = document.getElementById("question").textContent.replace("單字: ", "");
+            let currentWord = document.getElementById("question").textContent;
             let correctWordObj = words.find(w => w.word === currentWord);
             let selectedOption = document.getElementById(`btn${selectedIndex}`).textContent;
 
@@ -362,7 +396,7 @@ const words = [
             } else {
                 document.getElementById("result").textContent = `❌ 錯了！正確答案是: ${correctWordObj.definition}`;
                 document.getElementById("result").style.color = "var(--error-color)";
-                
+
                 // 顯示記憶技巧作為復習
                 document.getElementById("memory-tip").style.display = "block";
                 document.getElementById("memory-tip").textContent = correctWordObj.tip;
@@ -375,6 +409,20 @@ const words = [
         function hideButtons() {
             for (let i = 0; i < 3; i++) {
                 document.getElementById(`btn${i}`).style.display = "none";
+            }
+        }
+
+        function speakText(text, lang) {
+            if ('speechSynthesis' in window) { // 檢查瀏覽器是否支持 Web Speech API
+                const utterance = new SpeechSynthesisUtterance(text); // 建立語音合成物件
+                utterance.lang = lang; // 設定語言
+                // utterance.rate = 0.9; // 可選: 設定語速，範圍 0.1 (慢) 到 10 (快)，預設 1
+                // utterance.pitch = 1;  // 可選: 設定音調，範圍 0 (低) 到 2 (高)，預設 1
+
+                speechSynthesis.speak(utterance); // 開始朗讀
+            } else {
+                console.error("抱歉，您的瀏覽器不支持文字轉語音功能。");
+                alert("抱歉，您的瀏覽器不支持文字轉語音功能。");
             }
         }
     </script>
