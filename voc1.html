@@ -313,7 +313,7 @@ const words = [
                 updateProgress();
                 currentIndex++;
 
-                prepareQuizForCurrentWord();
+                setTimeout(prepareQuizForCurrentWord, 1500); // 加入延遲
 
             } else {
                 document.getElementById("question").textContent = `學習模式完成！`;
