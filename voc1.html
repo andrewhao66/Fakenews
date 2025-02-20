@@ -5,192 +5,192 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>進階單字學習與測驗</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        :root {
-            --primary-color: #4a90e2;
-            --secondary-color: #f5f5f5;
-            --success-color: #28a745;
-            --error-color: #dc3545;
-            --text-color-light: #ffffff; /* 淺色文字，用於按鈕等 */
-            --text-color-dark: #333333;   /* 深色文字，用於主要內容 */
-            --background-light: #f5f7fa;  /* 淺色背景 */
-            --background-gradient-start: #f5f7fa; /* 漸層背景起始色 */
-            --background-gradient-end: #c3cfe2;   /* 漸層背景結束色 */
-            --card-background: #ffffff;      /* 卡片背景色 */
-            --card-shadow: rgba(0,0,0,0.1); /* 卡片陰影顏色 */
-            --button-background: var(--primary-color); /* 按鈕背景色 */
-            --button-hover-shadow: rgba(74, 144, 226, 0.3); /* 按鈕 hover 陰影色 */
-            --progress-bar-background: #eee; /* 進度條背景色 */
-        }
+      <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5f5f5;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --text-color-light: #ffffff; /* 淺色文字，用於按鈕等 */
+            --text-color-dark: #333333;   /* 深色文字，用於主要內容 */
+            --background-light: #f5f7fa;  /* 淺色背景 */
+            --background-gradient-start: #f5f7fa; /* 漸層背景起始色 */
+            --background-gradient-end: #c3cfe2;   /* 漸層背景結束色 */
+            --card-background: #ffffff;      /* 卡片背景色 */
+            --card-shadow: rgba(0,0,0,0.1); /* 卡片陰影顏色 */
+            --button-background: var(--primary-color); /* 按鈕背景色 */
+            --button-hover-shadow: rgba(74, 144, 226, 0.3); /* 按鈕 hover 陰影色 */
+            --progress-bar-background: #eee; /* 進度條背景色 */
+        }
 
-        body {
-            font-family: 'Microsoft JhengHei', Arial, sans-serif;
-            margin: 0;
-            padding: 0; /* 移除 body 預設 padding，改由 game-container 控制 */
-            background: linear-gradient(135deg, var(--background-gradient-start) 0%, var(--background-gradient-end) 100%);
-            min-height: 100vh;
-            display: flex; /* 使用 Flexbox 讓內容置中 */
-            justify-content: center; /* 水平置中 */
-            align-items: center; /* 垂直置中 */
-            color: var(--text-color-dark); /* 設定 body 預設文字顏色 */
-        }
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            margin: 0;
+            padding: 0; /* 移除 body 預設 padding，改由 game-container 控制 */
+            background: linear-gradient(135deg, var(--background-gradient-start) 0%, var(--background-gradient-end) 100%);
+            min-height: 100vh;
+            display: flex; /* 使用 Flexbox 讓內容置中 */
+            justify-content: center; /* 水平置中 */
+            align-items: center; /* 垂直置中 */
+            color: var(--text-color-dark); /* 設定 body 預設文字顏色 */
+        }
 
-        #game-container {
-            max-width: 800px;
-            width: 95%; /* 在小螢幕上佔滿寬度 */
-            margin: 20px; /* 調整外邊距，控制整體容器與邊緣的距離 */
-            padding: 40px; /* 增加容器內邊距，使內容更寬敞 */
-            border-radius: 20px; /* 更圓潤的容器邊角 */
-            background-color: var(--card-background); /* 使用變數 */
-            box-shadow: 0 12px 40px var(--card-shadow); /* 更明顯的陰影 */
-            text-align: center; /* 容器內文字預設置中 */
-        }
+        #game-container {
+            max-width: 800px;
+            width: 95%; /* 在小螢幕上佔滿寬度 */
+            margin: 20px; /* 調整外邊距，控制整體容器與邊緣的距離 */
+            padding: 40px; /* 增加容器內邊距，使內容更寬敞 */
+            border-radius: 20px; /* 更圓潤的容器邊角 */
+            background-color: var(--card-background); /* 使用變數 */
+            box-shadow: 0 12px 40px var(--card-shadow); /* 更明顯的陰影 */
+            text-align: center; /* 容器內文字預設置中 */
+        }
 
-        h1 {
-            color: var(--primary-color);
-            margin-bottom: 35px; /* 增加標題下方間距 */
-           font-size: 2.5em; /* 稍微加大標題字體 */
-            font-weight: bold; /* 加粗標題文字 */
-        }
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 35px; /* 增加標題下方間距 */
+            font-size: 2.5em; /* 稍微加大標題字體 */
+            font-weight: bold; /* 加粗標題文字 */
+        }
 
-        .mode-button {
-            background-color: var(--button-background); /* 使用變數 */
-            color: var(--text-color-light); /* 使用淺色文字變數 */
-            border: none;
-            padding: 14px 30px; /* 稍微加大按鈕內邊距 */
-            border-radius: 30px; /* 更圓潤的按鈕邊角 */
-            font-size: 1.1em; /* 稍微加大按鈕字體 */
-            margin: 12px; /* 增加按鈕外邊距 */
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 5px 15px var(--button-hover-shadow); /* 初始陰影效果 */
-            font-weight: bold; /* 加粗按鈕文字 */
-            letter-spacing: 0.5px; /* 增加字間距，更現代感 */
-            text-transform: capitalize; /* 文字轉換為首字母大寫 */
-        }
+        .mode-button {
+            background-color: var(--button-background); /* 使用變數 */
+            color: var(--text-color-light); /* 使用淺色文字變數 */
+            border: none;
+            padding: 14px 30px; /* 稍微加大按鈕內邊距 */
+            border-radius: 30px; /* 更圓潤的按鈕邊角 */
+            font-size: 1.1em; /* 稍微加大按鈕字體 */
+            margin: 12px; /* 增加按鈕外邊距 */
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 15px var(--button-hover-shadow); /* 初始陰影效果 */
+            font-weight: bold; /* 加粗按鈕文字 */
+            letter-spacing: 0.5px; /* 增加字間距，更現代感 */
+            text-transform: capitalize; /* 文字轉換為首字母大寫 */
+        }
 
-        .mode-button:hover {
-            transform: translateY(-3px); /* hover 時向上微移 */
-            box-shadow: 0 8px 25px var(--button-hover-shadow); /* hover 時陰影更明顯 */
-        }
+        .mode-button:hover {
+            transform: translateY(-3px); /* hover 時向上微移 */
+            box-shadow: 0 8px 25px var(--button-hover-shadow); /* hover 時陰影更明顯 */
+        }
 
-        .word-card {
-            background-color: var(--secondary-color);
-            padding: 30px; /* 增加卡片內邊距 */
-            border-radius: 15px; /* 更圓潤的卡片邊角 */
-            margin: 25px 0; /* 增加卡片上下外邊距 */
-            box-shadow: 0 3px 10px var(--card-shadow); /* 卡片增加輕微陰影 */
-        }
+        .word-card {
+            background-color: var(--secondary-color);
+            padding: 30px; /* 增加卡片內邊距 */
+            border-radius: 15px; /* 更圓潤的卡片邊角 */
+            margin: 25px 0; /* 增加卡片上下外邊距 */
+            box-shadow: 0 3px 10px var(--card-shadow); /* 卡片增加輕微陰影 */
+        }
 
-        .memory-tip {
-            background-color: #fff3cd;
-            border-left: 5px solid #ffc107; /* 加粗記憶提示左邊框 */
-            padding: 18px; /* 增加記憶提示內邊距 */
-            margin: 18px 0; /* 增加記憶提示上下外邊距 */
-            border-radius: 0 8px 8px 0; /* 圓角更明顯 */
-            font-size: 0.95em; /* 稍微縮小提示文字 */
-            color: #666; /* 提示文字顏色稍微柔和 */
-        }
+        .memory-tip {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107; /* 加粗記憶提示左邊框 */
+            padding: 18px; /* 增加記憶提示內邊距 */
+            margin: 18px 0; /* 增加記憶提示上下外邊距 */
+            border-radius: 0 8px 8px 0; /* 圓角更明顯 */
+            font-size: 0.95em; /* 稍微縮小提示文字 */
+            color: #666; /* 提示文字顏色稍微柔和 */
+        }
 
-        .answer-button {
-            background-color: var(--card-background); /* 使用變數 */
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            padding: 12px 25px; /* 調整答題按鈕內邊距 */
-            margin: 8px; /* 調整答題按鈕外邊距 */
-            border-radius: 25px; /* 更圓潤的答題按鈕邊角 */
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 85%; /* 答題按鈕寬度稍微加大 */
-            max-width: 350px; /* 答題按鈕最大寬度稍微加大 */
-            font-size: 1em; /* 答題按鈕字體大小 */
-            font-weight: 500; /* 答題按鈕文字稍微加粗 */
-        }
+        .answer-button {
+            background-color: var(--card-background); /* 使用變數 */
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 12px 25px; /* 調整答題按鈕內邊距 */
+            margin: 8px; /* 調整答題按鈕外邊距 */
+            border-radius: 25px; /* 更圓潤的答題按鈕邊角 */
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 85%; /* 答題按鈕寬度稍微加大 */
+            max-width: 350px; /* 答題按鈕最大寬度稍微加大 */
+            font-size: 1em; /* 答題按鈕字體大小 */
+            font-weight: 500; /* 答題按鈕文字稍微加粗 */
+        }
 
-        .answer-button:hover {
-            background-color: var(--primary-color);
-            color: var(--text-color-light); /* hover 時文字變淺色 */
-            box-shadow: 0 3px 8px var(--button-hover-shadow); /* hover 時增加陰影 */
-            transform: scale(1.02); /* hover 時稍微放大 */
-        }
+        .answer-button:hover {
+            background-color: var(--primary-color);
+            color: var(--text-color-light); /* hover 時文字變淺色 */
+            box-shadow: 0 3px 8px var(--button-hover-shadow); /* hover 時增加陰影 */
+            transform: scale(1.02); /* hover 時稍微放大 */
+        }
 
-        #result {
-            font-size: 1.3em; /* 加大結果文字字體 */
-            margin: 25px 0; /* 增加結果文字上下外邊距 */
-            font-weight: bold;
-            min-height: 1.5em; /* 確保有足夠的高度顯示結果 */
-        }
+        #result {
+            font-size: 1.3em; /* 加大結果文字字體 */
+            margin: 25px 0; /* 增加結果文字上下外邊距 */
+            font-weight: bold;
+            min-height: 1.5em; /* 確保有足夠的高度顯示結果 */
+        }
 
-        #score {
-            font-size: 1.6em; /* 加大學習進度字體 */
-            color: var(--primary-color);
-            font-weight: bold; /* 加粗學習進度文字 */
-        }
+        #score {
+            font-size: 1.6em; /* 加大學習進度字體 */
+            color: var(--primary-color);
+            font-weight: bold; /* 加粗學習進度文字 */
+        }
 
-        .progress-bar {
-            width: 100%;
-            height: 12px; /* 加高進度條 */
-            background-color: var(--progress-bar-background); /* 使用變數 */
-            border-radius: 6px; /* 更圓潤的進度條邊角 */
-            margin: 25px 0; /* 增加進度條上下外邊距 */
-            overflow: hidden;
-        }
+        .progress-bar {
+            width: 100%;
+            height: 12px; /* 加高進度條 */
+            background-color: var(--progress-bar-background); /* 使用變數 */
+            border-radius: 6px; /* 更圓潤的進度條邊角 */
+            margin: 25px 0; /* 增加進度條上下外邊距 */
+            overflow: hidden;
+        }
 
-        .progress {
-            height: 100%;
-            background-color: var(--primary-color);
-            transition: width 0.4s ease; /* 進度條動畫稍微放慢 */
-        }
+        .progress {
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width 0.4s ease; /* 進度條動畫稍微放慢 */
+        }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); } /* fade in 動畫起始位置稍微下方 */
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); } /* fade in 動畫起始位置稍微下方 */
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        .fade-in {
-            animation: fadeIn 0.6s ease; /* fade in 動畫稍微放慢 */
-        }
+        .fade-in {
+            animation: fadeIn 0.6s ease; /* fade in 動畫稍微放慢 */
+        }
 
-        /* TTS 按鈕樣式 (保持不變，可根據喜好微調) */
-        .tts-button {
-            background: none;
-            border: none;
-            color: var(--primary-color);
-            cursor: pointer;
-            padding: 0;
-            margin-left: 8px; /* 稍微增加與文字的間距 */
-            font-size: 1em; /* 調整圖示大小 */
-            vertical-align: middle;
-            opacity: 0.7;
-            transition: opacity 0.3s;
-        }
+        /* TTS 按鈕樣式 (保持不變，可根據喜好微調) */
+        .tts-button {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 0;
+            margin-left: 8px; /* 稍微增加與文字的間距 */
+            font-size: 1em; /* 調整圖示大小 */
+            vertical-align: middle;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
 
-        .tts-button:hover {
-            opacity: 1;
-        }
+        .tts-button:hover {
+            opacity: 1;
+        }
 
-        /* 挑戰模式輸入框樣式 */
-        .challenge-input {
-            padding: 14px; /* 加大輸入框內邊距 */
-            margin: 20px 0; /* 增加輸入框上下外邊距 */
-            border-radius: 30px; /* 更圓潤的輸入框邊角 */
-            border: 2px solid var(--primary-color);
-            width: 85%; /* 輸入框寬度稍微加大 */
-            max-width: 350px; /* 輸入框最大寬度稍微加大 */
-            font-size: 1.1em; /* 輸入框字體稍微加大 */
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* 輸入框增加輕微陰影 */
-        }
+        /* 挑戰模式輸入框樣式 */
+        .challenge-input {
+            padding: 14px; /* 加大輸入框內邊距 */
+            margin: 20px 0; /* 增加輸入框上下外邊距 */
+            border-radius: 30px; /* 更圓潤的輸入框邊角 */
+            border: 2px solid var(--primary-color);
+            width: 85%; /* 輸入框寬度稍微加大 */
+            max-width: 350px; /* 輸入框最大寬度稍微加大 */
+            font-size: 1.1em; /* 輸入框字體稍微加大 */
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* 輸入框增加輕微陰影 */
+        }
 
-        .challenge-input:focus {
-            outline: none;
-            box-shadow: 0 0 8px rgba(74, 144, 226, 0.5); /* 聚焦時陰影更明顯 */
-            border-color: var(--primary-color);
-        }
-    </style>
+        .challenge-input:focus {
+            outline: none;
+            box-shadow: 0 0 8px rgba(74, 144, 226, 0.5); /* 聚焦時陰影更明顯 */
+            border-color: var(--primary-color);
+        }
+    </style>
 </head>
 <body>
     <div id="game-container">
