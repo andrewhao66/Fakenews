@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>進階單字學習與測驗</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>進階單字學習與測驗</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
       <style>
         /*
         * -------------------------------------
@@ -232,6 +239,387 @@
             border-color: var(--primary-color);
         }
     </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>進階單字學習與測驗</h1>
+        <button class="mode-button" onclick="startLearning()">開始學習模式</button>
+        <button class="mode-button" onclick="startTest()">開始測驗模式</button>
+        <button class="mode-button" onclick="startChallenge()">開始挑戰模式</button>
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        <div class="word-card fade-in">
+            <p style="font-size: 1.5em; font-weight: bold;">
+                單字: <span id="question">請選擇一種模式開始</span>
+                <button class="tts-button" onclick="speakText(document.getElementById('question').textContent, 'en-US')">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </p>
+            <p>
+                英文定義: <span id="definition"></span>
+                <button class="tts-button" onclick="speakText(document.getElementById('definition').textContent, 'en-US')">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </p>
+            <p>
+                中文定義: <span id="chinese-definition"></span>
+                <button class="tts-button" onclick="speakText(document.getElementById('chinese-definition').textContent, 'zh-TW')">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </p>
+            <div id="memory-tip" class="memory-tip" style="display: none;"></div>
+            <input type="text" id="challenge-answer" class="challenge-input" style="display: none;" placeholder="請輸入單字">
+        </div>
+        <div class="buttons-container">
+            <button onclick="checkAnswer(0)" id="btn0" class="answer-button"></button>
+            <button onclick="checkAnswer(1)" id="btn1" class="answer-button"></button>
+            <button onclick="checkAnswer(2)" id="btn2" class="answer-button"></button>
+        </div>
+        <p id="result"></p>
+        <p>學習進度: <span id="score">0</span></p>
+        <button onclick="nextStep()" id="next-btn" class="mode-button">下一步</button>
+    </div>
+
+    <script>
+        const words = [
+            {
+                word: "Demonstration",
+                definition: "A protest; a large gathering of people for a common cause",
+                chinese: "示威遊行",
+                tip: "記憶技巧：Demo(展示) + stration(街道) → 在街道上展示訴求"
+            },
+            {
+                word: "Emancipation",
+                definition: "Freedom; liberation from slavery",
+                chinese: "解放，獲得自由",
+                tip: "記憶技巧：E(出) + man(人) + cipation(狀態) → 人從受限制的狀態中出來"
+            },
+            {
+                word: "Score",
+                definition: "Twenty years",
+                chinese: "二十年",
+                tip: "記憶技巧：聯想計分板上的分數，一個完整的計分週期為20分"
+            },
+            {
+                word: "Manacle",
+                definition: "Chains; handcuffs; shackles worn by a prisoner",
+                chinese: "手銬；腳鐐",
+                tip: "記憶技巧：Man(手) + acle(束縛) → 束縛手的工具"
+            },
+            {
+                word: "Segregation",
+                definition: "Separation; the practice of keeping different groups apart",
+                chinese: "隔離",
+                tip: "記憶技巧：Seg(分開) + regation(區域) → 將不同群體分開"
+            },
+            {
+                word: "Discrimination",
+                definition: "Prejudice; hatred or unequal treatment",
+                chinese: "歧視",
+                tip: "記憶技巧：Dis(不) + crimination(區分) → 不公平的區分"
+            },
+            {
+                word: "Promissory note",
+                definition: "A promise or guarantee for something",
+                chinese: "期票；本票",
+                tip: "記憶技巧：Promise(承諾) + note(票據) → 承諾付款的票據"
+            },
+            {
+                word: "Bankrupt",
+                definition: "Without money; broke; ruined",
+                chinese: "破產",
+                tip: "記憶技巧：Bank(銀行) + rupt(破裂) → 銀行帳戶破裂"
+            },
+            {
+                word: "Tranquility",
+                definition: "Peace; calm; ease",
+                chinese: "平靜",
+                tip: "記憶技巧：Tranquil(平靜的) + ity(狀態) → 平靜的狀態"
+            },
+            {
+                word: "Degenerate",
+                definition: "To grow worse, to fall apart",
+                chinese: "退化；惡化",
+                tip: "記憶技巧：De(向下) + generate(產生) → 向下產生，變壞"
+            },
+            {
+                word: "Militancy",
+                definition: "Activism; political and social awareness",
+                chinese: "戰鬥性；激進",
+                tip: "記憶技巧：Militant(激進的) + cy(狀態) → 激進的狀態"
+            },
+            {
+                word: "Brutality",
+                definition: "Extreme violence; oppressive force",
+                chinese: "殘暴",
+                tip: "記憶技巧：Brute(野獸) + ality(性質) → 野獸般的性質"
+            },
+            {
+                word: "Mobility",
+                definition: "Freedom of movement",
+                chinese: "移動性",
+                tip: "記憶技巧：Mobile(移動的) + ity(性質) → 移動的性質"
+            },
+            {
+                word: "Ghetto",
+                definition: "A very poor neighborhood designated for a certain group; a slum",
+                chinese: "貧民窟",
+                tip: "記憶技巧：Ghetto(貧民窟) → 聯想到貧困的區域"
+            },
+            {
+                word: "Dignity",
+                definition: "Pride; self-respect",
+                chinese: "尊嚴",
+                tip: "記憶技巧：Dign(價值) + ity(狀態) → 有價值的狀態"
+            },
+            {
+                word: "Justice",
+                definition: "Correctness; fairness; the right way",
+                chinese: "正義",
+                tip: "記憶技巧：Just(公正的) + ice(狀態) → 公正的狀態"
+            },
+            {
+                word: "Righteousness",
+                definition: "Moral goodness",
+                chinese: "正直",
+                tip: "記憶技巧：Right(正確的) + eousness(狀態) → 正直的狀態"
+            }
+        ];
+
+        let score = 0;
+        let mode = "";
+        let currentIndex = 0;
+        let currentSet = [];
+        let quizQuestions = [];
+        let step = 0;
+        let totalSteps = words.length * 4; // 學習模式總步數，挑戰模式不計入此進度
+
+        function updateProgress() {
+            const progress = (step / totalSteps) * 100;
+            document.getElementById("progress").style.width = `${progress}%`;
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function startLearning() {
+            mode = "learning";
+            score = 0;
+            currentIndex = 0;
+            step = 0;
+            shuffle(words);
+            document.getElementById('challenge-answer').style.display = "none";
+
+            // **移除：不再需要手動顯示 word-card，因為 CSS 已設定為預設顯示**
+            // document.querySelector('.word-card').style.display = "block";
+
+            document.getElementById("definition").parentElement.style.display = "block";
+            document.getElementById("chinese-definition").parentElement.style.display = "block";
+            nextStep();
+            updateProgress();
+            const nextButton = document.getElementById('next-btn');
+            nextButton.textContent = "下一步";
+            nextButton.onclick = nextStep;
+        }
+
+        function startTest() {
+            mode = "test";
+            score = 0;
+            shuffle(words);
+            quizQuestions = words.slice(0, 10);
+
+            // **移除：不再需要手動顯示 word-card，因為 CSS 已設定為預設顯示**
+            // document.querySelector('.word-card').style.display = "block";
+
+            loadQuiz();
+            updateProgress();
+            const nextButton = document.getElementById('next-btn');
+            nextButton.textContent = "下一步";
+            nextButton.onclick = nextStep;
+        }
+
+        function startChallenge() {
+            mode = "challenge";
+            score = 0;
+            currentIndex = 0;
+            step = 0;
+            shuffle(words);
+            document.getElementById("definition").parentElement.style.display = "block";
+            document.getElementById("chinese-definition").parentElement.style.display = "block";
+
+            // **移除：不再需要手動顯示 word-card，因為 CSS 已設定為預設顯示**
+            // document.querySelector('.word-card').style.display = "block";
+
+            nextStep();
+            updateProgress();
+            const nextButton = document.getElementById('next-btn');
+            nextButton.textContent = "檢查答案";
+            nextButton.onclick = checkChallengeAnswer;
+            nextButton.style.display = "block";
+        }
+
+        function nextStep() {
+            if (mode === "learning") {
+                if (step < 4 && currentIndex < words.length) {
+                    let wordObj = words[currentIndex++];
+                    currentSet.push(wordObj);
+                    document.getElementById("question").textContent = `單字: ${wordObj.word}`;
+                    document.getElementById("definition").textContent = `英文定義: ${wordObj.definition}`;
+                    document.getElementById("chinese-definition").textContent = `中文定義: ${wordObj.chinese}`;
+                    const memoryTip = document.getElementById("memory-tip");
+                    memoryTip.style.display = "block";
+                    memoryTip.textContent = wordObj.tip || "練習記憶這個單字的拼寫和含義";
+                    document.getElementById("result").textContent = "";
+                    hideButtons();
+                    step++;
+                    updateProgress();
+                } else if (step === 4) {
+                    shuffle(currentSet);
+                    quizQuestions = [currentSet[0], currentSet[1]];
+                    step++;
+                    loadQuiz();
+                    updateProgress();
+                } else if (step >= 5) {
+                    step = 0;
+                    currentSet = [];
+                    quizQuestions = [];
+                    nextStep();
+                    updateProgress();
+                    startLearning(); // **新增: 學習模式結束後重新開始學習模式**
+                }
+            } else if (mode === "test") {
+                loadQuiz();
+            } else if (mode === "challenge") {
+                if (currentIndex < words.length) {
+                    let wordObj = words[currentIndex++];
+                    document.getElementById("question").textContent = `請寫出: ${wordObj.definition}`;
+                    document.getElementById("definition").parentElement.style.display = "none";
+                    document.getElementById("chinese-definition").parentElement.style.display = "none";
+                    document.getElementById("memory-tip").style.display = "none";
+                    document.getElementById("challenge-answer").style.display = "block";
+                    document.getElementById("challenge-answer").value = "";
+                    document.getElementById("challenge-answer").focus();
+                    hideButtons();
+                    document.getElementById("result").textContent = "";
+                } else {
+                    document.getElementById("question").textContent = "挑戰模式完成！";
+                    document.getElementById("definition").textContent = `你的得分: ${score} / ${words.length}`;
+                    document.getElementById("chinese-definition").textContent = "";
+                    document.getElementById("memory-tip").style.display = "none";
+                    document.getElementById("challenge-answer").style.display = "none";
+                    document.getElementById('next-btn').style.display = "block";
+                }
+            }
+        }
+
+        function loadQuiz() {
+            if (mode === "test") {
+                if (quizQuestions.length === 0) {
+                    document.getElementById("result").textContent = "測驗完成！請點擊下一步";
+                    document.getElementById("memory-tip").style.display = "none";
+                    return;
+                }
+
+                let wordObj = quizQuestions.pop();
+                document.getElementById("question").textContent = `${wordObj.word}`;
+                document.getElementById("definition").parentElement.style.display = "none";
+                document.getElementById("chinese-definition").parentElement.style.display = "none";
+                document.getElementById("memory-tip").style.display = "none";
+                document.getElementById("challenge-answer").style.display = "none";
+
+
+                let otherDefinitions = words.filter(w => w.word !== wordObj.word).map(w => w.definition);
+                shuffle(otherDefinitions);
+                let options = [wordObj.definition, otherDefinitions[0], otherDefinitions[1]];
+                shuffle(options);
+
+                for (let i = 0; i < 3; i++) {
+                    const btn = document.getElementById(`btn${i}`);
+                    btn.textContent = options[i];
+                    btn.style.display = "inline-block";
+                    btn.onclick = () => checkAnswer(i, wordObj.definition);
+                }
+                document.getElementById("next-btn").style.display = "none"; // 測驗模式中隱藏 "下一步" 按鈕，改用選項按鈕
+            } else {
+                hideButtons();
+            }
+        }
+
+        function hideButtons() {
+            for (let i = 0; i < 3; i++) {
+                document.getElementById(`btn${i}`).style.display = "none";
+            }
+        }
+
+        function checkAnswer(selectedIndex, correctAnswerDefinition) {
+            if (mode !== "test") return;
+
+            const selectedDefinition = document.getElementById(`btn${selectedIndex}`).textContent;
+
+            if (selectedDefinition === correctAnswerDefinition) {
+                score++;
+                document.getElementById("result").textContent = "✅ 答對了！";
+                document.getElementById("result").style.color = "var(--success-color)";
+            } else {
+                document.getElementById("result").textContent = `❌ 答錯了！正確答案是: ${correctAnswerDefinition}`;
+                document.getElementById("result").style.color = "var(--error-color)";
+            }
+
+            document.getElementById("score").textContent = score;
+            document.getElementById("next-btn").style.display = "block"; // 顯示 "下一步" 按鈕
+        }
+
+        function checkChallengeAnswer() {
+            if (mode !== "challenge") return;
+
+            const userAnswer = document.getElementById("challenge-answer").value.trim();
+            const currentWordObject = words[currentIndex - 1];
+
+            if (!currentWordObject) { // **新增錯誤處理: 檢查 currentWordObject 是否為空**
+                console.error("錯誤: currentWordObject 為空，無法檢查答案！currentIndex:", currentIndex);
+                document.getElementById("result").textContent = "程式錯誤，請重試挑戰模式。";
+                document.getElementById("result").style.color = "var(--error-color)";
+                return; // 停止函數執行
+            }
+
+            if (userAnswer.toLowerCase() === currentWordObject.word.toLowerCase()) {
+                score++;
+                document.getElementById("result").textContent = "✅ 答對了！";
+                document.getElementById("result").style.color = "var(--success-color)";
+            } else {
+                document.getElementById("result").textContent = `❌ 答錯了！正確答案是: ${currentWordObject.word}`;
+                document.getElementById("result").style.color = "var(--error-color)";
+            }
+
+            document.getElementById("score").textContent = score;
+            document.getElementById("challenge-answer").style.display = "none";
+
+            // **修復：加入延遲，讓使用者能看到結果訊息，再進入下一步**
+            setTimeout(nextStep, 1500); // 延遲 1.5 秒後呼叫 nextStep()
+        }
+
+
+        function speakText(text, lang) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            speechSynthesis.speak(utterance);
+        }
+
+        // 初始化載入時，隱藏答題按鈕
+        hideButtons();
+
+        // **新增: 網頁載入完成後自動開始學習模式**
+        window.onload = function() {
+            startLearning();
+        };
+    </script>
+</body>
+</html>
 </head>
 <body>
     <div id="game-container">
