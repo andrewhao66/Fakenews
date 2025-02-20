@@ -54,14 +54,14 @@
 
     /*
     * -------------------------------------
-    *  容器 (Containers)
+    *  容器 (Containers) - 調整垂直外邊距
     * -------------------------------------
     */
     #game-container {
         max-width: 800px;
         width: 95%;
-        margin: 20px;
-        padding: 40px;
+        margin: 15px; /* 稍微減少容器整體外邊距，上下 15px */
+        padding: 30px; /* 稍微減少容器內邊距，調整為 30px */
         border-radius: 20px;
         background-color: var(--card-background);
         box-shadow: 0 12px 40px var(--card-shadow);
@@ -70,17 +70,17 @@
 
     .word-card {
         background-color: var(--secondary-color);
-        padding: 30px;
+        padding: 20px; /* 稍微減少卡片內邊距，調整為 20px */
         border-radius: 15px;
-        margin: 25px 0;
+        margin: 15px 0; /* 減少卡片上下外邊距，調整為 15px */
         box-shadow: 0 3px 10px var(--card-shadow);
     }
 
     .memory-tip {
         background-color: #fff3cd;
         border-left: 5px solid #ffc107;
-        padding: 18px;
-        margin: 18px 0;
+        padding: 12px; /* 稍微減少記憶提示內邊距，調整為 12px */
+        margin: 10px 0; /* 減少記憶提示上下外邊距，調整為 10px */
         border-radius: 0 8px 8px 0;
         font-size: 0.95em;
         color: #666;
@@ -91,7 +91,7 @@
         height: 12px;
         background-color: var(--progress-bar-background);
         border-radius: 6px;
-        margin: 25px 0;
+        margin: 20px 0; /* 稍微減少進度條上下外邊距，調整為 20px */
         overflow: hidden;
     }
 
@@ -102,24 +102,27 @@
     }
 
     .buttons-container {
-        margin-top: 20px; /* 為按鈕容器增加上邊距 */
-        margin-bottom: 20px; /* 為按鈕容器增加下邊距 */
+        margin-top: 15px; /* 稍微減少按鈕容器上邊距，調整為 15px */
+        margin-bottom: 15px; /* 稍微減少按鈕容器下邊距，調整為 15px */
     }
 
 
     /*
     * -------------------------------------
-    *  按鈕 (Buttons)
+    *  按鈕 (Buttons) - 調整垂直外邊距
     * -------------------------------------
     */
     .mode-button, .answer-button, #next-btn { /* 確保 #next-btn 也套用 mode-button 樣式 */
         background-color: var(--button-background);
         color: var(--text-color-light);
         border: none;
-        padding: 14px 30px;
+        padding: 12px 25px; /* 稍微減少按鈕內邊距，調整為 12px 25px */
         border-radius: 30px;
         font-size: 1.1em;
-        margin: 12px;
+        margin-top: 8px;    /* 減少按鈕上方外邊距，調整為 8px */
+        margin-bottom: 8px; /* 減少按鈕下方外邊距，調整為 8px */
+        margin-left: 10px;
+        margin-right: 10px;
         cursor: pointer;
         transition: transform 0.2s, box-shadow 0.2s;
         box-shadow: 0 5px 15px var(--button-hover-shadow);
@@ -130,23 +133,22 @@
     }
 
     .mode-button:hover, .answer-button:hover, #next-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px var(--button-hover-shadow);
+        transform: translateY(-2px); /* hover 時向上微移幅度稍微減少，調整為 -2px */
+        box-shadow: 0 6px 20px var(--button-hover-shadow); /* hover 時陰影也稍微調整 */
     }
 
     .answer-button {
         background-color: var(--card-background);
         border: 2px solid var(--primary-color);
         color: var(--primary-color);
-        padding: 12px 25px;
-        margin: 8px;
+        padding: 10px 20px; /* 稍微減少答題按鈕內邊距，調整為 10px 20px */
+        margin: 6px; /* 稍微減少答題按鈕外邊距，調整為 6px */
         border-radius: 25px;
         width: 85%;
         max-width: 350px;
         font-size: 1em;
         font-weight: 500;
     }
-
 
     /*
     * -------------------------------------
