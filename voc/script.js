@@ -80,13 +80,13 @@ if (document.getElementById("quiz-container")) {
 if (document.getElementById("challenge-container")) {
     let currentQuestionIndex = 0;
     let score = 0;
-    let timeLeft = 10;
+    let timeLeft = 30;  // 修改為 30 秒
     let timer;
 
     function startChallenge() {
         document.getElementById("challenge-start").classList.add("hidden");
         document.getElementById("challenge-quiz").classList.remove("hidden");
-        timeLeft = 10;
+        timeLeft = 30;  // 修改為 30 秒
         score = 0;
         currentQuestionIndex = 0;
         loadChallengeQuestion();
@@ -106,31 +106,18 @@ if (document.getElementById("challenge-container")) {
     function loadChallengeQuestion() {
         const question = words[currentQuestionIndex];
         document.getElementById("challenge-question").innerText = `單字: ${question.word}`;
-
-        let options = [question.chinese];
-        while (options.length < 3) {
-            let randomOption = words[Math.floor(Math.random() * words.length)].chinese;
-            if (!options.includes(randomOption)) {
-                options.push(randomOption);
-            }
-        }
-
-        options.sort(() => Math.random() - 0.5);
-        const optionsContainer = document.getElementById("challenge-options");
-        optionsContainer.innerHTML = "";
-        options.forEach(option => {
-            let btn = document.createElement("button");
-            btn.innerText = option;
-            btn.classList.add("quiz-option");
-            btn.onclick = () => checkChallengeAnswer(option, question.chinese);
-            optionsContainer.appendChild(btn);
-        });
+        document.getElementById("challenge-answer").value = ""; // 清空輸入框
     }
 
-    function checkChallengeAnswer(selected, correct) {
-        if (selected === correct) {
+    function checkChallengeAnswer() {
+        const question = words[currentQuestionIndex];
+        let userAnswer = document.getElementById("challenge-answer").value.trim().toLowerCase();
+        let correctAnswer = question.word.toLowerCase();
+
+        if (userAnswer === correctAnswer) {
             score++;
         }
+
         currentQuestionIndex++;
         if (currentQuestionIndex < words.length) {
             loadChallengeQuestion();
@@ -142,4 +129,6 @@ if (document.getElementById("challenge-container")) {
     }
 
     document.getElementById("challenge-start-btn").addEventListener("click", startChallenge);
+    document.getElementById("challenge-submit-btn").addEventListener("click", checkChallengeAnswer);
+}
 }
