@@ -402,7 +402,7 @@
             score = 0;
             currentIndex = 0;
             step = 0;
-            shuffle(words);
+            // shuffle(words); // 移除洗牌，按照原始順序顯示  <---  修改處
             document.getElementById('challenge-answer').style.display = "none";
 
             // **移除：不再需要手動顯示 word-card，因為 CSS 已設定為預設顯示**
@@ -609,4 +609,4 @@
         };
     </script>
 </body>
-</html
+</html>
