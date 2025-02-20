@@ -1,134 +1,103 @@
-// 單字數據
 const words = [
-    { word: "HTML", definition: "超文本標記語言", chinese: "超文本標記語言", memoryTip: "用來建立網頁結構" },
-    { word: "CSS", definition: "層疊樣式表", chinese: "層疊樣式表", memoryTip: "用來美化網頁" },
-    { word: "JavaScript", definition: "前端程式語言", chinese: "JavaScript", memoryTip: "讓網頁有動態效果" }
+    { word: "Demonstration", definition: "A protest; a large gathering of people for a common cause.", chinese: "示威", tip: "想像一群人拿著標語抗議" },
+    { word: "Emancipation", definition: "Freedom; liberation from slavery.", chinese: "解放", tip: "聯想到美國的《解放宣言》" },
+    { word: "Manacles", definition: "Chains; handcuffs.", chinese: "手銬", tip: "想像犯人手上戴著鐵手銬" }
 ];
 
-// 學習模式
-if (document.getElementById("word")) {
-    let currentWordIndex = 0;
+let currentWordIndex = 0;
 
-    function updateWord() {
-        const wordData = words[currentWordIndex];
-        document.getElementById("word").innerText = wordData.word;
-        document.getElementById("definition").innerText = wordData.definition;
-        document.getElementById("chinese").innerText = wordData.chinese;
-        document.getElementById("memoryTip").innerText = wordData.memoryTip;
-    }
-
-    document.getElementById("next-btn").addEventListener("click", function () {
-        currentWordIndex = (currentWordIndex + 1) % words.length;
-        updateWord();
-    });
-
-    updateWord();
+// 切換到學習模式
+function startLearning() {
+    document.getElementById("main-menu").classList.add("hidden");
+    document.getElementById("learning-container").classList.remove("hidden");
+    showWord();
 }
 
-// 測驗模式
-if (document.getElementById("quiz-container")) {
-    let currentQuestionIndex = 0;
-    let score = 0;
-
-    function loadQuestion() {
-        const question = words[currentQuestionIndex];
-        document.getElementById("quiz-question").innerText = `單字: ${question.word}`;
-
-        let options = [question.chinese];
-        while (options.length < 3) {
-            let randomOption = words[Math.floor(Math.random() * words.length)].chinese;
-            if (!options.includes(randomOption)) {
-                options.push(randomOption);
-            }
-        }
-
-        options.sort(() => Math.random() - 0.5);
-        const optionsContainer = document.getElementById("quiz-options");
-        optionsContainer.innerHTML = "";
-        options.forEach(option => {
-            let btn = document.createElement("button");
-            btn.innerText = option;
-            btn.classList.add("quiz-option");
-            btn.onclick = () => checkAnswer(option, question.chinese);
-            optionsContainer.appendChild(btn);
-        });
-    }
-
-    function checkAnswer(selected, correct) {
-        if (selected === correct) {
-            alert("答對了！");
-            score++;
-        } else {
-            alert(`答錯了！正確答案是：${correct}`);
-        }
-
-        currentQuestionIndex++;
-        if (currentQuestionIndex < words.length) {
-            loadQuestion();
-        } else {
-            alert(`測驗結束！您的得分：${score}/${words.length}`);
-            currentQuestionIndex = 0;
-            score = 0;
-            loadQuestion();
-        }
-    }
-
-    loadQuestion();
+// 顯示單字
+function showWord() {
+    let wordData = words[currentWordIndex];
+    document.getElementById("word-display").innerHTML = `
+        <h3>${wordData.word}</h3>
+        <p><strong>定義：</strong> ${wordData.definition}</p>
+        <p><strong>中文：</strong> ${wordData.chinese}</p>
+        <p style="background: yellow; display: inline-block; padding: 5px;"><strong>記憶提示：</strong> ${wordData.tip}</p>
+    `;
 }
 
-// 挑戰模式（限時答題）
-if (document.getElementById("challenge-container")) {
-    let currentQuestionIndex = 0;
-    let score = 0;
-    let timeLeft = 30;  // 修改為 30 秒
-    let timer;
-
-    function startChallenge() {
-        document.getElementById("challenge-start").classList.add("hidden");
-        document.getElementById("challenge-quiz").classList.remove("hidden");
-        timeLeft = 30;  // 修改為 30 秒
-        score = 0;
-        currentQuestionIndex = 0;
-        loadChallengeQuestion();
-        timer = setInterval(updateTimer, 1000);
-    }
-
-    function updateTimer() {
-        timeLeft--;
-        document.getElementById("timer").innerText = `剩餘時間: ${timeLeft} 秒`;
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            alert(`時間到！您的得分：${score}`);
-            location.reload();
-        }
-    }
-
-    function loadChallengeQuestion() {
-        const question = words[currentQuestionIndex];
-        document.getElementById("challenge-question").innerText = `單字: ${question.word}`;
-        document.getElementById("challenge-answer").value = ""; // 清空輸入框
-    }
-
-    function checkChallengeAnswer() {
-        const question = words[currentQuestionIndex];
-        let userAnswer = document.getElementById("challenge-answer").value.trim().toLowerCase();
-        let correctAnswer = question.word.toLowerCase();
-
-        if (userAnswer === correctAnswer) {
-            score++;
-        }
-
-        currentQuestionIndex++;
-        if (currentQuestionIndex < words.length) {
-            loadChallengeQuestion();
-        } else {
-            clearInterval(timer);
-            alert(`挑戰結束！您的得分：${score}`);
-            location.reload();
-        }
-    }
-
-    document.getElementById("challenge-start-btn").addEventListener("click", startChallenge);
-    document.getElementById("challenge-submit-btn").addEventListener("click", checkChallengeAnswer);
+// 下一個單字
+function nextWord() {
+    currentWordIndex = (currentWordIndex + 1) % words.length;
+    showWord();
 }
+
+// 切換到測驗模式
+function startTest() {
+    document.getElementById("main-menu").classList.add("hidden");
+    document.getElementById("test-container").classList.remove("hidden");
+    generateTestQuestion();
+}
+
+// 產生測驗題目
+function generateTestQuestion() {
+    let wordData = words[Math.floor(Math.random() * words.length)];
+    let correctAnswer = wordData.definition;
+    let options = [correctAnswer];
+
+    while (options.length < 3) {
+        let randomDef = words[Math.floor(Math.random() * words.length)].definition;
+        if (!options.includes(randomDef)) options.push(randomDef);
+    }
+
+    options.sort(() => Math.random() - 0.5);
+
+    document.getElementById("test-question").innerText = `請選擇 "${wordData.word}" 的正確定義：`;
+    document.getElementById("test-options").innerHTML = options.map(opt => 
+        `<button onclick="checkTestAnswer('${opt}', '${correctAnswer}')">${opt}</button>`
+    ).join("");
+}
+
+// 檢查測驗答案
+function checkTestAnswer(selected, correct) {
+    if (selected === correct) {
+        alert("✅ 答對了！");
+    } else {
+        alert(`❌ 答錯了！ 正確答案是：${correct}`);
+    }
+    generateTestQuestion();
+}
+
+// 切換到挑戰模式
+function startChallenge() {
+    document.getElementById("main-menu").classList.add("hidden");
+    document.getElementById("challenge-container").classList.remove("hidden");
+    generateChallengeQuestion();
+}
+
+// 產生挑戰題目
+function generateChallengeQuestion() {
+    let wordData = words[Math.floor(Math.random() * words.length)];
+    document.getElementById("challenge-question").innerText = `請拼寫出以下定義的英文單字：\n${wordData.definition}`;
+    document.getElementById("challenge-input").value = "";
+    document.getElementById("challenge-input").setAttribute("data-answer", wordData.word);
+}
+
+// 檢查挑戰模式答案
+function checkAnswer() {
+    let input = document.getElementById("challenge-input").value.trim();
+    let correctAnswer = document.getElementById("challenge-input").getAttribute("data-answer");
+
+    if (input.toLowerCase() === correctAnswer.toLowerCase()) {
+        alert("✅ 答對了！");
+        generateChallengeQuestion();
+    } else {
+        alert(`❌ 答錯了！ 正確答案是：${correctAnswer}`);
+    }
+}
+
+// 返回主畫面
+function goHome() {
+    document.getElementById("learning-container").classList.add("hidden");
+    document.getElementById("test-container").classList.add("hidden");
+    document.getElementById("challenge-container").classList.add("hidden");
+    document.getElementById("main-menu").classList.remove("hidden");
 }
