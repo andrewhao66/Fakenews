@@ -499,35 +499,15 @@
                 for (let i = 0; i < 3; i++) {
                     const btn = document.getElementById(`btn${i}`);
                     btn.textContent = options[i];
-                    btn.style.display = "block";
-                    btn.className = "answer-button fade-in";
+                    btn.style.display = "inline-block";
+                    btn.onclick = () => checkAnswer(i, wordObj.definition);
                 }
-            }
-        }
+                document.getElementById("next-btn").style.display = "none"; // 測驗模式中隱藏 "下一步" 按鈕，改用選項按鈕
+                // **移除： 隱藏原本的 "檢查答案" 按鈕 (因為已經不需要了)**
+                // document.getElementById('submit-btn').style.display = "none";
 
-        function checkAnswer(selectedIndex) {
-            let currentWord = document.getElementById("question").textContent.replace("單字: ", "");
-            let correctWordObj = words.find(w => w.word === currentWord);
-            let selectedOption = document.getElementById(`btn${selectedIndex}`).textContent;
-
-            if (selectedOption === correctWordObj.definition) {
-                score++;
-                document.getElementById("result").textContent = "✅ 答對了！";
-                document.getElementById("result").style.color = "var(--success-color)";
             } else {
-                document.getElementById("result").textContent = `❌ 答錯了！正確答案是: ${correctWordObj.definition}`;
-                document.getElementById("result").style.color = "var(--error-color)";
-                document.getElementById("memory-tip").style.display = "block";
-                document.getElementById("memory-tip").textContent = correctWordObj.tip;
-            }
-
-            document.getElementById("score").textContent = score;
-            document.getElementById('next-btn').style.display = "block";
-            hideButtons();
-
-            if (quizQuestions.length === 0) {
-                document.getElementById("result").textContent = "測驗完成！請點擊下一步";
-                document.getElementById("memory-tip").style.display = "none";
+                hideButtons();
             }
         }
 
@@ -537,15 +517,24 @@
             }
         }
 
-        function speakText(text, lang) {
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = lang;
-                speechSynthesis.speak(utterance);
+        function checkAnswer(selectedIndex, correctAnswerDefinition) {
+            if (mode !== "test") return;
+
+            const selectedDefinition = document.getElementById(`btn${selectedIndex}`).textContent;
+
+            if (selectedDefinition === correctAnswerDefinition) {
+                score++;
+                document.getElementById("result").textContent = "✅ 答對了！";
+                document.getElementById("result").style.color = "var(--success-color)";
             } else {
-                console.error("抱歉，您的瀏覽器不支持文字轉語音功能。");
-                alert("抱歉，您的瀏覽器不支持文字轉語音功能。");
+                document.getElementById("result").textContent = `❌ 答錯了！正確答案是: ${correctAnswerDefinition}`;
+                document.getElementById("result").style.color = "var(--error-color)";
             }
+
+            document.getElementById("score").textContent = score;
+            document.getElementById("next-btn").style.display = "block"; // 顯示 "下一步" 按鈕
+            // **移除： 隱藏原本的 "檢查答案" 按鈕 (因為已經不需要了)**
+            // document.getElementById('submit-btn').style.display = "none";
         }
 
         function checkChallengeAnswer() {
@@ -573,20 +562,19 @@
             document.getElementById("score").textContent = score;
             document.getElementById("challenge-answer").style.display = "none";
 
-            // **修復：將 nextStep() 呼叫移到這裡，確保每次檢查答案後都會進入下一步**
-            nextStep();
-            // **移除： 挑戰模式檢查答案後，判斷是否還有題目，決定是否載入下一題或顯示完成訊息 (此判斷已移至 nextStep() 函數中)**
-            // if (currentIndex < words.length) {
-            //     nextStep(); // 如果還有題目，則呼叫 nextStep() 載入下一題
-            // } else {
-            //     document.getElementById("question").textContent = "挑戰模式完成！";
-            //     document.getElementById("definition").textContent = `你的得分: ${score} / ${words.length}`;
-            //     document.getElementById("chinese-definition").textContent = "";
-            //     document.getElementById("memory-tip").style.display = "none";
-            //     document.getElementById("challenge-answer").style.display = "none";
-            //     document.getElementById('next-btn').style.display = "block";
-            // }
+            // **修復：加入延遲，讓使用者能看到結果訊息，再進入下一步**
+            setTimeout(nextStep, 1500); // 延遲 1.5 秒後呼叫 nextStep()
         }
+
+
+        function speakText(text, lang) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            speechSynthesis.speak(utterance);
+        }
+
+        // 初始化載入時，隱藏答題按鈕
+        hideButtons();
     </script>
 </body>
 </html>
