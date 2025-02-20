@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端單字學習網頁</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>歡迎來到單字學習網頁</h1>
+        <p>請選擇模式：</p>
+        <button onclick="goTo('learn.html')">學習模式</button>
+        <button onclick="goTo('quiz.html')">測驗模式</button>
+        <button onclick="goTo('challenge.html')">挑戰模式</button>
+    </div>
+    <script>
+        function goTo(page) {
+            window.location.href = page;
+        }
+    </script>
+</body>
+</html>
