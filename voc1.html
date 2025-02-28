@@ -7,11 +7,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
     :root {
-        /* ... ( :root 變數設定保持不變 ) ... */
+        --primary-color: #4a90e2;       /* 主要顏色：鮮明的藍色 */
+        --secondary-color: #f8f9fa;     /* 次要顏色：淡灰色背景 */
+        --text-color-dark: #333;        /* 深色文字顏色 */
+        --text-color-light: #fff;       /* 淺色文字顏色 */
+        --background-gradient-start: #e6f7ff; /* 背景漸變開始顏色 */
+        --background-gradient-end: #ffffff;   /* 背景漸變結束顏色 */
+        --card-background: #fff;        /* 卡片背景顏色：白色 */
+        --card-shadow: rgba(0,0,0,0.1);  /* 卡片陰影顏色 */
+        --button-background: var(--primary-color); /* 按鈕背景顏色：與主要顏色相同 */
+        --button-hover-shadow: rgba(74, 144, 226, 0.3); /* 按鈕 Hover 陰影 */
+        --progress-bar-background: #eee; /* 進度條背景顏色 */
+        --success-color: #28a745;       /* 成功顏色：綠色 */
+        --error-color: #dc3545;         /* 錯誤顏色：紅色 */
     }
 
     body {
-        font-family: 'Microsoft JhengHei', Arial, sans-serif;
+        font-family: Arial, sans-serif; /* 簡化字體設定 */
         margin: 0;
         padding: 0;
         background: linear-gradient(135deg, var(--background-gradient-start) 0%, var(--background-gradient-end) 100%);
@@ -164,6 +176,53 @@
         box-shadow: 0 0 8px rgba(74, 144, 226, 0.5);
         border-color: var(--primary-color);
     }
+
+    /* ---  (可選) Media Queries 範例  --- */
+    @media screen and (max-width: 768px) {
+        h1 {
+            font-size: 1.6em;
+        }
+        .mode-button {
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+        .word-card {
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .memory-tip {
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 0.85em;
+        }
+        .answer-button {
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+        #result, #score {
+            font-size: 1em;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            margin: 10px 0;
+        }
+        .challenge-input {
+            padding: 10px;
+            font-size: 1em;
+            margin: 10px 0;
+        }
+    }
+
+    @media screen and (min-width: 769px) and (max-width: 1024px) {
+        h1 {
+            font-size: 1.8em;
+        }
+        .mode-button {
+            padding: 9px 18px;
+            font-size: 0.95em;
+        }
+    }
+
 </style>
 </head>
 <body>
