@@ -452,7 +452,6 @@
             nextButton.onclick = checkChallengeAnswer;
             nextButton.style.display = "block";
         }
-
         function nextStep() {
             if (mode === "learning") {
                 if (step < 4 && currentIndex < words.length) {
@@ -470,7 +469,7 @@
                     updateProgress();
                 } else if (step === 4) {
                     shuffle(currentSet);
-                    quizQuestions = [currentSet[0], currentSet[1]];
+                    quizQuestions = currentSet.slice(0, 3); // 修改為隨機抽三題
                     step++;
                     loadQuiz();
                     updateProgress();
@@ -506,6 +505,8 @@
                 }
             }
         }
+
+
 
         function loadQuiz() {
             if (mode === "test") {
