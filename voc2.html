@@ -402,7 +402,7 @@
         let currentSet = [];
         let quizQuestions = [];
         let step = 0;
-        let totalSteps = words.length * 4; // 學習模式總步數，挑戰模式不計入此進度
+        let totalSteps = words.length; // 學習模式總步數，挑戰模式不計入此進度
 
         function updateProgress() {
             const progress = (step / totalSteps) * 100;
