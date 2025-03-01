@@ -450,7 +450,8 @@
             updateProgress();
             nextButton.textContent = "下一步";
             nextButton.onclick = nextStep;
-        }
+            nextButton.style.display = "block";
+    }
 
         function startChallenge() {
             mode = "challenge";
