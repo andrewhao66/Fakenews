@@ -441,13 +441,13 @@
             score = 0;
             shuffle(words);
             quizQuestions = words.slice(0, 10);
+            document.getElementById("next-btn")
 
             // **移除：不再需要手動顯示 word-card，因為 CSS 已設定為預設顯示**
             // document.querySelector('.word-card').style.display = "block";
 
             loadQuiz();
             updateProgress();
-            const nextButton = document.getElementById('next-btn');
             nextButton.textContent = "下一步";
             nextButton.onclick = nextStep;
         }
