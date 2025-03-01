@@ -467,13 +467,7 @@
                     hideButtons();
                     step++;
                     updateProgress();
-                } else if (step === 4) {
-                    shuffle(currentSet);
-                    quizQuestions = currentSet.slice(0, 3); // 修改為隨機抽三題
-                    step++;
-                    loadQuiz();
-                    updateProgress();
-                } else if (step >= 5) {
+                } else if (step === 17) {
                     step = 0;
                     currentSet = [];
                     quizQuestions = [];
@@ -505,6 +499,7 @@
                 }
             }
         }
+
 
 
 
