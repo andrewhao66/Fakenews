@@ -652,46 +652,98 @@
             document.getElementById("score").textContent = score;
             document.getElementById("next-btn").style.display = "block"; // 顯示 "下一步" 按鈕
         }
-        async function checkSentenceWithGemini() {
-            if (mode !== "sentence-making") return;
-
-            const userSentence = document.getElementById("sentence-answer").value.trim();
-            const currentWordObject = words[currentIndex - 1];
-
-            if (!currentWordObject) {
-                console.error("錯誤: currentWordObject 為空，無法檢查答案！currentIndex:", currentIndex);
-                document.getElementById("result").textContent = "程式錯誤，請重試造句模式。";
-                document.getElementById("result").style.color = "var(--error-color)";
-                return;
+            async function checkSentenceWithGemini() {
+                // 提取常量
+                const MODE_SENTENCE_MAKING = "sentence-making";
+                const ERROR_MESSAGE_PROGRAM = "程式錯誤，請重試造句模式。";
+                const ERROR_MESSAGE_INPUT = "請輸入你的造句。";
+                const ERROR_MESSAGE_API_FAIL = "造句檢查失敗，請稍後重試。";
+                const ERROR_MESSAGE_API_KEY = "API 金鑰缺失，請檢查你的 API 金鑰設定。";  // 新增更詳細的錯誤訊息
+                const ERROR_MESSAGE_API_RATE_LIMIT = "API 呼叫次數過多，請稍後再試。";  // 新增速率限制錯誤訊息
+                const ERROR_MESSAGE_API_FORMAT = "API 請求格式錯誤。請檢查你的輸入。"; // 格式錯誤
+            
+                if (mode !== MODE_SENTENCE_MAKING) return;
+            
+                const userSentence = document.getElementById("sentence-answer").value.trim();
+                const currentWordObject = words[currentIndex - 1];
+            
+                if (!currentWordObject) {
+                    console.error("錯誤: currentWordObject 為空，無法檢查答案！currentIndex:", currentIndex);
+                    displayResult(ERROR_MESSAGE_PROGRAM, "var(--error-color)");
+                    return;
+                }
+            
+                if (!userSentence) {
+                    displayResult(ERROR_MESSAGE_INPUT, "var(--error-color)");
+                    return;
+                }
+            
+                // ** ⚠️ 安全警告：請勿在正式環境中使用此方法 ⚠️ **
+                // **     API 金鑰直接暴露在前端程式碼中，極不安全     **
+                //   API 金鑰請使用環境變數或後端代理!
+                const apiKey = 'AIzaSyCdB0PRBTb-v2bxp9uk-rg4DONdN5-DkjQ'; // 請替換成環境變數
+                // const apiKey = process.env.API_KEY; // 在瀏覽器中使用 webpack 或類似工具注入環境變數
+                if (!apiKey) {
+                     displayResult(ERROR_MESSAGE_API_KEY, "var(--error-color)");
+                    return;
+                }
+            
+                const genAI = new google.generativeAI.GenerativeModel({ apiKey: apiKey });
+                const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
+            
+                // 加載指示器 (例如：顯示 "正在檢查..." 訊息 或 旋轉的圖示)
+                displayResult("正在檢查句子...", "var(--secondary-color)");
+            
+                // 提示語加入例子
+                const prompt = `請檢查以下句子是否正確使用了單字 "${currentWordObject.word}"，並判斷文法是否正確。請以簡潔中文回覆，說明句子是否恰當，並在不恰當的情況下，提供修改建議:
+                例子 1:
+                句子: The cat sat on the mat.
+                回覆: 恰當。
+            
+                例子 2:
+                句子: I goed to the store.
+                回覆: 不恰當。 修改建議：我去了商店。
+            
+                句子: ${userSentence}`;
+            
+                try {
+                    const result = await model.generateContent(prompt);
+                    const responseText = result.response.text();
+                    displayResult(responseText, "var(--primary-color");
+                    document.getElementById("sentence-answer").style.display = "none";  // 隱藏輸入框
+                    setTimeout(nextStep, 2000); // 2 秒後進入下一步
+            
+                } catch (error) {
+                    console.error("Gemini API 呼叫失敗:", error);
+                    let errorMessage = ERROR_MESSAGE_API_FAIL;
+            
+                    // 判斷不同的錯誤類型
+                    if (error.code === 400) {
+                        errorMessage = ERROR_MESSAGE_API_FORMAT;
+                    } else if (error.code === 429) {
+                        errorMessage = ERROR_MESSAGE_API_RATE_LIMIT;
+                    } else if (error.message && error.message.includes("API key is missing")) {
+                        errorMessage = ERROR_MESSAGE_API_KEY;
+                    }
+            
+                    displayResult(errorMessage, "var(--error-color)");
+            
+                    // 顯示更詳細的錯誤資訊，方便除錯
+                    console.error("API 錯誤詳細資訊:", error);
+                    console.error("API 錯誤狀態碼:", error.code);
+                    console.error("API 錯誤訊息:", error.message);
+                } finally {
+                    // 隱藏加載指示器 (如果有的話)
+                }
             }
-
-            if (!userSentence) {
-                document.getElementById("result").textContent = "請輸入你的造句。";
-                document.getElementById("result").style.color = "var(--error-color)";
-                return;
+            
+            
+            // 輔助函數，用於顯示結果
+            function displayResult(text, color) {
+                const resultElement = document.getElementById("result");
+                resultElement.textContent = text;
+                resultElement.style.color = color;
             }
-
-            // ** ⚠️ 安全警告：請勿在正式環境中使用此方法 ⚠️ **
-            // **     API 金鑰直接暴露在前端程式碼中，極不安全     **
-            const genAI = new google.generativeAI.GenerativeModel({ apiKey: 'AIzaSyCdB0PRBTb-v2bxp9uk-rg4DONdN5-DkjQ' }); //  !!! 替換成你的 API 金鑰 !!!
-            const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" }); // 選擇模型
-
-            const prompt = `請檢查以下句子是否正確使用了單字 "${currentWordObject.word}"，並判斷文法是否正確。請以簡潔中文回覆，說明句子是否恰當，並在不恰當的情況下，提供修改建議:\n\n句子: ${userSentence}`;
-
-            try {
-                const result = await model.generateContent(prompt);
-                const responseText = result.response.text();
-                document.getElementById("result").textContent = responseText;
-                document.getElementById("result").style.color = "var(--primary-color)";
-                document.getElementById("sentence-answer").style.display = "none";
-                setTimeout(nextStep, 2000);
-
-            } catch (error) {
-                console.error("Gemini API 呼叫失敗:", error);
-                document.getElementById("result").textContent = "造句檢查失敗，請稍後重試。";
-                document.getElementById("result").style.color = "var(--error-color)";
-            }
-        }
                 function speakText(text, lang) {
                     const utterance = new SpeechSynthesisUtterance(text);
                     utterance.lang = lang;
