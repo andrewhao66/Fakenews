@@ -674,7 +674,7 @@
             // ** ⚠️ 安全警告：請勿在正式環境中使用此方法 ⚠️ **
             // **     API 金鑰直接暴露在前端程式碼中，極不安全     **
             const genAI = new google.generativeAI.GenerativeModel({ apiKey: 'AIzaSyCdB0PRBTb-v2bxp9uk-rg4DONdN5-DkjQ' }); //  !!! 替換成你的 API 金鑰 !!!
-            const model = genAI.getGenerativeModel({ model: "Gemini 2.0 Flash-Lite" }); // 選擇模型
+            const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" }); // 選擇模型
 
             const prompt = `請檢查以下句子是否正確使用了單字 "${currentWordObject.word}"，並判斷文法是否正確。請以簡潔中文回覆，說明句子是否恰當，並在不恰當的情況下，提供修改建議:\n\n句子: ${userSentence}`;
 
