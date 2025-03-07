@@ -436,6 +436,8 @@
             const nextButton = document.getElementById('next-btn');
             nextStep();
             updateProgress();
+            const nextButton = document.getElementById('next-btn');
+            nextButton.style.display = "block";
             nextButton.textContent = "下一步";
             nextButton.onclick = nextStep;
         }
