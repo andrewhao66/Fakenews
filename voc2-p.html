@@ -621,12 +621,13 @@
                 document.getElementById("result").textContent = "✅ 答對了！";
                 document.getElementById("result").style.color = "var(--success-color)";
             } else {
+                document.getElementById("chinese-definition").parentElement.style.display = "block";
+                document.getElementById("memory-tip").style.display = "block";
                 document.getElementById("result").textContent = `❌ 答錯了！正確答案是: ${correctAnswerDefinition}`;
                 document.getElementById("result").style.color = "var(--error-color)";
                 document.getElementById("definition").textContent = `英文定義: ${wordObj.definition}`;
                 document.getElementById("chinese-definition").textContent = `中文定義: ${wordObj.chinese}`;
-                document.getElementById("chinese-definition").parentElement.style.display = "block";
-                document.getElementById("memory-tip").style.display = "block";
+
             }
 
             document.getElementById("score").textContent = score;
