@@ -578,26 +578,26 @@
                     document.getElementById("memory-tip").style.display = "none";
                     return;
                 }
-
+    
                 let wordObj = quizQuestions.pop();
                 document.getElementById("question").textContent = `${wordObj.word}`;
-                document.getElementById("definition").parentElement.style.display = "none";
+                document.getElementById("definition").parentElement.style.display = "none"; // 測驗模式初始時隱藏定義和中文
                 document.getElementById("chinese-definition").parentElement.style.display = "none";
                 document.getElementById("memory-tip").style.display = "none";
                 document.getElementById("challenge-answer").style.display = "none";
                 document.getElementById('sentence-answer').style.display = "none"; // 確保造句輸入框隱藏
-
-
+    
+    
                 let otherDefinitions = words.filter(w => w.word !== wordObj.word).map(w => w.definition);
                 shuffle(otherDefinitions);
                 let options = [wordObj.definition, otherDefinitions[0], otherDefinitions[1]];
                 shuffle(options);
-
+    
                 for (let i = 0; i < 3; i++) {
                     const btn = document.getElementById(`btn${i}`);
                     btn.textContent = options[i];
                     btn.style.display = "inline-block";
-                    btn.onclick = () => checkAnswer(i, wordObj.definition);
+                    btn.onclick = () => checkAnswer(i, wordObj.definition, wordObj); // 修改按鈕點擊事件，傳遞 wordObj
                 }
                 document.getElementById("next-btn").style.display = "none"; // 測驗模式中隱藏 "下一步" 按鈕，改用選項按鈕
             } else {
@@ -611,28 +611,37 @@
             }
         }
 
-        function checkAnswer(selectedIndex, correctAnswerDefinition) {
+       function checkAnswer(selectedIndex, correctAnswerDefinition, wordObj) { // 修改 checkAnswer 函數，添加 wordObj 參數
             if (mode !== "test") return;
-
+    
             const selectedDefinition = document.getElementById(`btn${selectedIndex}`).textContent;
-
+    
             if (selectedDefinition === correctAnswerDefinition) {
                 score++;
                 document.getElementById("result").textContent = "✅ 答對了！";
                 document.getElementById("result").style.color = "var(--success-color)";
+                document.getElementById("definition").parentElement.style.display = "none"; // 答對時隱藏定義和中文
+                document.getElementById("chinese-definition").parentElement.style.display = "none";
+                document.getElementById("memory-tip").style.display = "none";
+    
+    
             } else {
-                document.getElementById("chinese-definition").parentElement.style.display = "block";
-                document.getElementById("memory-tip").style.display = "block";
                 document.getElementById("result").textContent = `❌ 答錯了！正確答案是: ${correctAnswerDefinition}`;
                 document.getElementById("result").style.color = "var(--error-color)";
-                document.getElementById("definition").textContent = `英文定義: ${wordObj.definition}`;
-                document.getElementById("chinese-definition").textContent = `中文定義: ${wordObj.chinese}`;
-                document.getElementById("memory-tip").textContent = `記憶技巧: ${wordObj.tip}`;;
+    
+                // 答錯時顯示中文定義和記憶技巧
+                document.getElementById("definition").parentElement.style.display = "block"; // 顯示定義區塊
+                document.getElementById("chinese-definition").parentElement.style.display = "block"; // 顯示中文定義區塊
+                document.getElementById("memory-tip").style.display = "block"; // 顯示記憶技巧區塊
+    
+                document.getElementById("definition").textContent = `英文定義: ${wordObj.definition}`; // 確保英文定義也顯示，雖然題目已顯示英文單字
+                document.getElementById("chinese-definition").textContent = `中文定義: ${wordObj.chinese}`; // 顯示中文定義
+                document.getElementById("memory-tip").textContent = wordObj.tip || "這個單字沒有記憶技巧"; // 顯示記憶技巧，如果沒有則顯示默認訊息
             }
-
+    
             document.getElementById("score").textContent = score;
             document.getElementById("next-btn").style.display = "block"; // 顯示 "下一步" 按鈕
-        }
+        }    
         async function checkSentenceWithGemini() {
             if (mode !== "sentence-making") return;
 
