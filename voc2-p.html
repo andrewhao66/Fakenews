@@ -615,6 +615,7 @@
             if (mode !== "test") return;
 
             const selectedDefinition = document.getElementById(`btn${selectedIndex}`).textContent;
+            let wordObj = quizQuestions.pop();
 
             if (selectedDefinition === correctAnswerDefinition) {
                 score++;
