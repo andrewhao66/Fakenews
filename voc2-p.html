@@ -621,8 +621,9 @@
                 document.getElementById("result").textContent = "✅ 答對了！";
                 document.getElementById("result").style.color = "var(--success-color)";
             } else {
-                document.getElementById("result").textContent = `❌ 答錯了！正確答案是: ${correctAnswerDefinition} ${correctAnswerChinese}`;
+                document.getElementById("result").textContent = `❌ 答錯了！正確答案是: ${correctAnswerDefinition}`;
                 document.getElementById("result").style.color = "var(--error-color)";
+                document.getElementById("chinese-definition").parentElement.style.display = "block";
             }
 
             document.getElementById("score").textContent = score;
