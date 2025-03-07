@@ -624,14 +624,6 @@
                 document.getElementById("result").textContent = `❌ 答錯了！正確答案是: ${correctAnswerDefinition}`;
                 document.getElementById("result").style.color = "var(--error-color)";
             }
-                    // 顯示記憶技巧
-            if (currentWordObject && currentWordObject.tip) {
-                document.getElementById("memory-tip").textContent = currentWordObject.tip;
-                document.getElementById("memory-tip").style.display = "block";
-            } else {
-                document.getElementById("memory-tip").style.display = "none";
-            }
-        }
 
             document.getElementById("score").textContent = score;
             document.getElementById("next-btn").style.display = "block"; // 顯示 "下一步" 按鈕
