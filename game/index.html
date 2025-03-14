@@ -298,7 +298,7 @@
         </div>
     </div>
 
-   <script>
+<script>
     // 角色對弈遊戲原型
     class Game {
         constructor() {
@@ -320,60 +320,34 @@
             this.currentTurn = "playerA";
             this.gameBoard = new Array(8).fill().map(() => new Array(8).fill(null));
             this.battleTurn = 0;
-            this.selectedCharacter = null;
+            this.selectedCharacterId = null; // 改用 ID 儲存選中的角色
         }
 
         initializeCharacters() {
             this.characters = [
-                {
-                    id: 1,
-                    name: "Selina",
-                    title: "無差鱉攻擊",
-                    hp: 800,
-                    attack: 120,
-                    position: "mid",
+                { id: 1, name: "Selina", title: "無差鱉攻擊", hp: 800, attack: 120, position: "mid",
                     skill: (self, allCharacters) => {
                         const enemies = allCharacters.filter(c => c.owner !== self.owner && c.hp > 0);
                         if (enemies.length > 0) {
                             const target = enemies[Math.floor(Math.random() * enemies.length)];
-                            console.log(`${self.name} 使用無差鱉攻擊，隨機攻擊 ${target.name}！`);
                             target.hp -= self.attack;
                             return `${self.name} 變成一隻鱉，對 ${target.name} 造成 ${self.attack} 點傷害！`;
                         }
                         return `${self.name} 使用無差鱉攻擊，但沒有目標！`;
                     }
                 },
-                {
-                    id: 2,
-                    name: "Vincent",
-                    title: "種族之力",
-                    hp: 900,
-                    attack: 150,
-                    position: "front",
+                { id: 2, name: "Vincent", title: "種族之力", hp: 900, attack: 150, position: "front",
                     skill: (self, allCharacters) => {
-                        const frontEnemies = allCharacters.filter(c => 
-                            c.owner !== self.owner && 
-                            c.hp > 0 && 
-                            c.position === "front"
-                        );
+                        const frontEnemies = allCharacters.filter(c => c.owner !== self.owner && c.hp > 0 && c.position === "front");
                         let damage = 0;
                         if (frontEnemies.length > 0) {
-                            frontEnemies.forEach(enemy => {
-                                enemy.hp -= self.attack;
-                                damage += self.attack;
-                            });
+                            frontEnemies.forEach(enemy => { enemy.hp -= self.attack; damage += self.attack; });
                             return `${self.name} 使用種族之力，對前排敵人造成總共 ${damage} 點傷害！`;
                         }
                         return `${self.name} 使用種族之力，但沒有前排敵人！`;
                     }
                 },
-                {
-                    id: 3,
-                    name: "Lorenzo",
-                    title: "暗器牙籤",
-                    hp: 700,
-                    attack: 100,
-                    position: "back",
+                { id: 3, name: "Lorenzo", title: "暗器牙籤", hp: 700, attack: 100, position: "back",
                     skill: (self, allCharacters) => {
                         const enemies = allCharacters.filter(c => c.owner !== self.owner && c.hp > 0);
                         let damage = 0;
@@ -392,13 +366,7 @@
                         return `${self.name} 使用暗器牙籤，但沒有目標！`;
                     }
                 },
-                {
-                    id: 4,
-                    name: "Bonnie",
-                    title: "兔子跳",
-                    hp: 650,
-                    attack: 80,
-                    position: "mid",
+                { id: 4, name: "Bonnie", title: "兔子跳", hp: 650, attack: 80, position: "mid",
                     skill: (self, allCharacters) => {
                         const enemies = allCharacters.filter(c => c.owner !== self.owner && c.hp > 0);
                         if (enemies.length > 0) {
@@ -411,17 +379,11 @@
                         return `${self.name} 使用兔子跳，但沒有目標！`;
                     }
                 },
-                {
-                    id: 5,
-                    name: "Amelia",
-                    title: "電鑽攻擊",
-                    hp: 750,
-                    attack: 180,
-                    position: "front",
+                { id: 5, name: "Amelia", title: "電鑽攻擊", hp: 750, attack: 180, position: "front",
                     skill: (self, allCharacters) => {
                         const enemies = allCharacters.filter(c => c.owner !== self.owner && c.hp > 0);
                         if (enemies.length > 0) {
-                            const target = enemies[0]; // 攻擊最近的敵人
+                            const target = enemies[0];
                             const damage = self.attack * 1.5;
                             target.hp -= damage;
                             return `${self.name} 使用電鑽攻擊，對 ${target.name} 造成 ${damage} 點多段傷害！`;
@@ -429,13 +391,7 @@
                         return `${self.name} 使用電鑽攻擊，但沒有目標！`;
                     }
                 },
-                {
-                    id: 6,
-                    name: "Ethan",
-                    title: "周一路就是俗辣",
-                    hp: 850,
-                    attack: 90,
-                    position: "mid",
+                { id: 6, name: "Ethan", title: "周一路就是俗辣", hp: 850, attack: 90, position: "mid",
                     skill: (self, allCharacters) => {
                         if (self.hp < self.maxHp * 0.3) {
                             self.position = "back";
@@ -452,13 +408,7 @@
                         return `${self.name} 攻擊，但沒有目標！`;
                     }
                 },
-                {
-                    id: 7,
-                    name: "Ean",
-                    title: "暗影肥豬",
-                    hp: 1200,
-                    attack: 70,
-                    position: "front",
+                { id: 7, name: "Ean", title: "暗影肥豬", hp: 1200, attack: 70, position: "front",
                     skill: (self, allCharacters) => {
                         if (self.hp < self.maxHp * 0.5 && !self.damageReduction) {
                             self.damageReduction = true;
@@ -466,27 +416,21 @@
                         }
                         const enemies = allCharacters.filter(c => c.owner !== self.owner && c.hp > 0);
                         if (enemies.length > 0) {
-                            const target = enemies[0]; // 攻擊最近的敵人
+                            const target = enemies[0];
                             target.hp -= self.attack;
                             return `${self.name} 攻擊 ${target.name} 造成 ${self.attack} 點傷害！`;
                         }
                         return `${self.name} 攻擊，但沒有目標！`;
                     }
                 },
-                {
-                    id: 8,
-                    name: "Andrew",
-                    title: "數學很好玩",
-                    hp: 700,
-                    attack: 110,
-                    position: "mid",
+                { id: 8, name: "Andrew", title: "數學很好玩", hp: 700, attack: 110, position: "mid",
                     skill: (self, allCharacters) => {
                         if (!self.skillCooldown || self.skillCooldown <= 0) {
                             const enemies = allCharacters.filter(c => c.owner !== self.owner && c.hp > 0);
                             if (enemies.length > 0) {
                                 const target = enemies[Math.floor(Math.random() * enemies.length)];
-                                target.stunned = 2; // 暈眩2回合
-                                self.skillCooldown = 3; // 技能冷卻3回合
+                                target.stunned = 2;
+                                self.skillCooldown = 3;
                                 return `${self.name} 使用數學很好玩，變身瘋狂Josh，使 ${target.name} 暈眩2回合！`;
                             }
                             return `${self.name} 使用數學很好玩，但沒有目標！`;
@@ -502,16 +446,10 @@
                         }
                     }
                 },
-                {
-                    id: 9,
-                    name: "Ian",
-                    title: "死亡小丑",
-                    hp: 850,
-                    attack: 100,
-                    position: "front",
+                { id: 9, name: "Ian", title: "死亡小丑", hp: 850, attack: 100, position: "front",
                     skill: (self, allCharacters) => {
                         if (self.hp < self.maxHp * 0.2 && !self.physicalImmunity) {
-                            self.physicalImmunity = 2; // 物理免疫2回合
+                            self.physicalImmunity = 2;
                             return `${self.name} 使用死亡小丑，獲得2回合物理免疫！`;
                         }
                         const enemies = allCharacters.filter(c => c.owner !== self.owner && c.hp > 0);
@@ -523,20 +461,12 @@
                         return `${self.name} 攻擊，但沒有目標！`;
                     }
                 },
-                {
-                    id: 10,
-                    name: "Antony",
-                    title: "糖糖攻擊",
-                    hp: 780,
-                    attack: 95,
-                    position: "mid",
+                { id: 10, name: "Antony", title: "糖糖攻擊", hp: 780, attack: 95, position: "mid",
                     skill: (self, allCharacters) => {
                         const enemies = allCharacters.filter(c => c.owner !== self.owner && c.hp > 0);
                         if (enemies.length > 0) {
                             const target = enemies[Math.floor(Math.random() * enemies.length)];
-                            if (!target.sugarMarks) {
-                                target.sugarMarks = 0;
-                            }
+                            if (!target.sugarMarks) target.sugarMarks = 0;
                             target.sugarMarks++;
                             target.hp -= self.attack;
                             let message = `${self.name} 使用糖糖攻擊，對 ${target.name} 造成 ${self.attack} 點傷害，並附加了1層印記！`;
@@ -551,13 +481,7 @@
                         return `${self.name} 使用糖糖攻擊，但沒有目標！`;
                     }
                 },
-                {
-                    id: 11,
-                    name: "Kelvin",
-                    title: "巨型糖寶寶",
-                    hp: 1000,
-                    attack: 60,
-                    position: "front",
+                { id: 11, name: "Kelvin", title: "巨型糖寶寶", hp: 1000, attack: 60, position: "front",
                     skill: (self, allCharacters) => {
                         if (!self.transformed) {
                             self.transformed = true;
@@ -574,13 +498,7 @@
                         return `${self.name} 攻擊，但沒有目標！`;
                     }
                 },
-                {
-                    id: 12,
-                    name: "Emily",
-                    title: "我們都是臭婊",
-                    hp: 730,
-                    attack: 105,
-                    position: "back",
+                { id: 12, name: "Emily", title: "我們都是臭婊", hp: 730, attack: 105, position: "back",
                     skill: (self, allCharacters) => {
                         const enemies = allCharacters.filter(c => c.owner !== self.owner && c.hp > 0);
                         if (enemies.length > 0) {
@@ -632,14 +550,12 @@
             
             if (player === "playerA") {
                 this.playerA.selectedCharacters.push({...character, owner: "playerA", maxHp: character.hp});
-                if (this.playerA.selectedCharacters.length < 2) {
-                    this.currentTurn = "playerB";
-                } else if (this.playerA.selectedCharacters.length === 2) {
+                if (this.playerA.selectedCharacters.length < 2) this.currentTurn = "playerB";
+                else if (this.playerA.selectedCharacters.length === 2) {
                     if (this.playerB.selectedCharacters.length < 2) this.currentTurn = "playerB";
                     else this.currentTurn = "playerA";
-                } else if (this.playerA.selectedCharacters.length === 3) {
-                    this.currentTurn = "playerB";
-                } else if (this.playerA.selectedCharacters.length === 4) {
+                } else if (this.playerA.selectedCharacters.length === 3) this.currentTurn = "playerB";
+                else if (this.playerA.selectedCharacters.length === 4) {
                     if (this.playerB.selectedCharacters.length < 4) this.currentTurn = "playerB";
                     else {
                         this.currentPhase = "placement";
@@ -648,14 +564,12 @@
                 }
             } else {
                 this.playerB.selectedCharacters.push({...character, owner: "playerB", maxHp: character.hp});
-                if (this.playerB.selectedCharacters.length < 2) {
-                    this.currentTurn = "playerA";
-                } else if (this.playerB.selectedCharacters.length === 2) {
+                if (this.playerB.selectedCharacters.length < 2) this.currentTurn = "playerA";
+                else if (this.playerB.selectedCharacters.length === 2) {
                     if (this.playerA.selectedCharacters.length < 2) this.currentTurn = "playerA";
                     else this.currentTurn = "playerB";
-                } else if (this.playerB.selectedCharacters.length === 3) {
-                    this.currentTurn = "playerA";
-                } else if (this.playerB.selectedCharacters.length === 4) {
+                } else if (this.playerB.selectedCharacters.length === 3) this.currentTurn = "playerA";
+                else if (this.playerB.selectedCharacters.length === 4) {
                     if (this.playerA.selectedCharacters.length < 4) this.currentTurn = "playerA";
                     else {
                         this.currentPhase = "placement";
@@ -695,8 +609,7 @@
                 }
             }
             
-            if (placedCountA < this.playerA.selectedCharacters.length || 
-                placedCountB < this.playerB.selectedCharacters.length) {
+            if (placedCountA < this.playerA.selectedCharacters.length || placedCountB < this.playerB.selectedCharacters.length) {
                 allPlaced = false;
             }
             
@@ -738,8 +651,6 @@
             if (this.currentPhase !== "battle") throw new Error("現在不是戰鬥階段!");
             
             this.battleTurn++;
-            console.log(`===== 回合 ${this.battleTurn} =====`);
-            
             const allCharacters = [];
             for (let r = 0; r < 8; r++) {
                 for (let c = 0; c < 8; c++) {
@@ -760,11 +671,8 @@
                 
                 if (character.physicalImmunity > 0) {
                     character.physicalImmunity--;
-                    if (character.physicalImmunity === 0) {
-                        battleLog.push(`${character.name} 的物理免疫效果消失`);
-                    } else {
-                        battleLog.push(`${character.name} 的物理免疫效果剩餘 ${character.physicalImmunity} 回合`);
-                    }
+                    if (character.physicalImmunity === 0) battleLog.push(`${character.name} 的物理免疫效果消失`);
+                    else battleLog.push(`${character.name} 的物理免疫效果剩餘 ${character.physicalImmunity} 回合`);
                 }
                 
                 if (character.charmed) {
@@ -785,22 +693,14 @@
             
             if (playerACharacters.length === 0 || playerBCharacters.length === 0) {
                 this.currentPhase = "end";
-                if (playerACharacters.length === 0 && playerBCharacters.length === 0) {
-                    battleLog.push("戰鬥結束，雙方平局!");
-                } else if (playerACharacters.length === 0) {
-                    battleLog.push(`戰鬥結束，${this.playerB.name} 獲勝!`);
-                } else {
-                    battleLog.push(`戰鬥結束，${this.playerA.name} 獲勝!`);
-                }
+                if (playerACharacters.length === 0 && playerBCharacters.length === 0) battleLog.push("戰鬥結束，雙方平局!");
+                else if (playerACharacters.length === 0) battleLog.push(`戰鬥結束，${this.playerB.name} 獲勝!`);
+                else battleLog.push(`戰鬥結束，${this.playerA.name} 獲勝!`);
             } else if (this.battleTurn >= 20) {
                 this.currentPhase = "end";
-                if (playerACharacters.length > playerBCharacters.length) {
-                    battleLog.push(`回合數達到上限，${this.playerA.name} 獲勝!`);
-                } else if (playerBCharacters.length > playerACharacters.length) {
-                    battleLog.push(`回合數達到上限，${this.playerB.name} 獲勝!`);
-                } else {
-                    battleLog.push("回合數達到上限，雙方平局!");
-                }
+                if (playerACharacters.length > playerBCharacters.length) battleLog.push(`回合數達到上限，${this.playerA.name} 獲勝!`);
+                else if (playerBCharacters.length > playerACharacters.length) battleLog.push(`回合數達到上限，${this.playerB.name} 獲勝!`);
+                else battleLog.push("回合數達到上限，雙方平局!");
             }
             
             return battleLog;
@@ -813,30 +713,15 @@
                 playerA: {
                     name: this.playerA.name,
                     bannedCharacter: this.playerA.bannedCharacter ? this.playerA.bannedCharacter.name : null,
-                    selectedCharacters: this.playerA.selectedCharacters.map(c => ({ 
-                        name: c.name, 
-                        hp: c.hp, 
-                        maxHp: c.maxHp 
-                    }))
+                    selectedCharacters: this.playerA.selectedCharacters.map(c => ({ name: c.name, hp: c.hp, maxHp: c.maxHp }))
                 },
                 playerB: {
                     name: this.playerB.name,
                     bannedCharacter: this.playerB.bannedCharacter ? this.playerB.bannedCharacter.name : null,
-                    selectedCharacters: this.playerB.selectedCharacters.map(c => ({ 
-                        name: c.name, 
-                        hp: c.hp,
-                        maxHp: c.maxHp
-                    }))
+                    selectedCharacters: this.playerB.selectedCharacters.map(c => ({ name: c.name, hp: c.hp, maxHp: c.maxHp }))
                 },
                 battleTurn: this.battleTurn,
-                gameBoard: this.gameBoard.map(row => 
-                    row.map(cell => cell ? { 
-                        name: cell.name, 
-                        owner: cell.owner, 
-                        hp: cell.hp,
-                        maxHp: cell.maxHp
-                    } : null)
-                )
+                gameBoard: this.gameBoard.map(row => row.map(cell => cell ? { name: cell.name, owner: cell.owner, hp: cell.hp, maxHp: cell.maxHp } : null))
             };
         }
 
@@ -851,7 +736,7 @@
             this.currentTurn = "playerA";
             this.gameBoard = new Array(8).fill().map(() => new Array(8).fill(null));
             this.battleTurn = 0;
-            this.selectedCharacter = null;
+            this.selectedCharacterId = null;
             return "遊戲已重置!";
         }
     }
@@ -880,8 +765,6 @@
             this.resetBtn = document.getElementById('resetBtn');
 
             this.setupEventListeners();
-            this.renderCharacters();
-            this.renderBoard();
         }
 
         setupEventListeners() {
@@ -889,25 +772,24 @@
                 const card = e.target.closest('.character-card');
                 if (card) {
                     const id = parseInt(card.dataset.id);
-                    const character = this.game.characters.find(c => c.id === id);
-                    if (character) {
-                        this.game.selectedCharacter = character;
-                        this.renderCharacters();
-                    }
+                    this.game.selectedCharacterId = id; // 只儲存 ID
+                    this.render();
                 }
             });
 
             this.gameBoard.addEventListener('click', (e) => {
                 const cell = e.target.closest('.board-cell');
-                if (cell && this.game.currentPhase === 'placement' && this.game.selectedCharacter) {
+                if (cell && this.game.currentPhase === 'placement' && this.game.selectedCharacterId) {
                     const row = parseInt(cell.dataset.row);
                     const col = parseInt(cell.dataset.col);
                     try {
-                        const player = this.game.currentTurn === 'both' ? (this.game.playerA.selectedCharacters.some(c => c.id === this.game.selectedCharacter.id) ? 'playerA' : 'playerB') : this.game.currentTurn;
-                        const index = this.game[player].selectedCharacters.findIndex(c => c.id === this.game.selectedCharacter.id);
+                        const player = this.game.currentTurn === 'both' ? 
+                            (this.game.playerA.selectedCharacters.some(c => c.id === this.game.selectedCharacterId) ? 'playerA' : 'playerB') : 
+                            this.game.currentTurn;
+                        const index = this.game[player].selectedCharacters.findIndex(c => c.id === this.game.selectedCharacterId);
                         const result = this.game.placeCharacter(player, index, row, col);
                         this.battleLog.innerHTML += `<p>${result}</p>`;
-                        this.game.selectedCharacter = null;
+                        this.game.selectedCharacterId = null;
                         this.render();
                     } catch (error) {
                         this.battleLog.innerHTML += `<p style="color: red;">${error.message}</p>`;
@@ -916,12 +798,12 @@
             });
 
             this.banBtn.addEventListener('click', () => {
-                if (this.game.selectedCharacter) {
+                if (this.game.selectedCharacterId && this.game.currentPhase === 'ban') {
                     try {
                         const player = this.game.currentTurn;
-                        const result = this.game.banCharacter(player, this.game.selectedCharacter.id);
+                        const result = this.game.banCharacter(player, this.game.selectedCharacterId);
                         this.battleLog.innerHTML += `<p>${result}</p>`;
-                        this.game.selectedCharacter = null;
+                        this.game.selectedCharacterId = null;
                         this.render();
                     } catch (error) {
                         this.battleLog.innerHTML += `<p style="color: red;">${error.message}</p>`;
@@ -930,12 +812,12 @@
             });
 
             this.pickBtn.addEventListener('click', () => {
-                if (this.game.selectedCharacter) {
+                if (this.game.selectedCharacterId && this.game.currentPhase === 'pick') {
                     try {
                         const player = this.game.currentTurn;
-                        const result = this.game.pickCharacter(player, this.game.selectedCharacter.id);
+                        const result = this.game.pickCharacter(player, this.game.selectedCharacterId);
                         this.battleLog.innerHTML += `<p>${result}</p>`;
-                        this.game.selectedCharacter = null;
+                        this.game.selectedCharacterId = null;
                         this.render();
                     } catch (error) {
                         this.battleLog.innerHTML += `<p style="color: red;">${error.message}</p>`;
@@ -944,8 +826,8 @@
             });
 
             this.placeBtn.addEventListener('click', () => {
-                if (this.game.selectedCharacter && this.game.currentPhase === 'placement') {
-                    this.battleLog.innerHTML += `<p>請點擊棋盤格子以佈置 ${this.game.selectedCharacter.name}</p>`;
+                if (this.game.currentPhase === 'placement' && this.game.selectedCharacterId) {
+                    this.battleLog.innerHTML += `<p>請點擊棋盤格子以佈置角色</p>`;
                 }
             });
 
@@ -969,7 +851,7 @@
             const bannedIds = [
                 this.game.playerA.bannedCharacter?.id,
                 this.game.playerB.bannedCharacter?.id
-            ];
+            ].filter(id => id !== undefined);
             const selectedIds = [
                 ...this.game.playerA.selectedCharacters.map(c => c.id),
                 ...this.game.playerB.selectedCharacters.map(c => c.id)
@@ -979,16 +861,15 @@
                 const card = document.createElement('div');
                 card.className = 'character-card';
                 card.dataset.id = character.id;
-                if (this.game.selectedCharacter && this.game.selectedCharacter.id === character.id) {
-                    card.classList.add('selected');
-                }
-                if (bannedIds.includes(character.id)) {
-                    card.classList.add('banned');
-                }
+                if (this.game.selectedCharacterId === character.id) card.classList.add('selected');
+                if (bannedIds.includes(character.id)) card.classList.add('banned');
+                if (selectedIds.includes(character.id) && this.game.currentPhase !== 'placement') card.classList.add('selected');
                 card.innerHTML = `
                     <div>${character.name} - ${character.title}</div>
                     <div>HP: ${character.hp}, 攻擊: ${character.attack}</div>
-                    <div class="status">${this.game.selectedCharacter?.id === character.id ? '已選中' : bannedIds.includes(character.id) ? '已禁用' : ''}</div>
+                    <div class="status">${this.game.selectedCharacterId === character.id ? '已選中' : 
+                        bannedIds.includes(character.id) ? '已禁用' : 
+                        selectedIds.includes(character.id) ? '已選擇' : ''}</div>
                 `;
                 this.characterSelection.appendChild(card);
             });
@@ -1002,9 +883,7 @@
                     cell.className = 'board-cell';
                     cell.dataset.row = r;
                     cell.dataset.col = c;
-                    if (this.game.currentPhase === 'placement' && this.game.selectedCharacter) {
-                        cell.classList.add('highlight');
-                    }
+                    if (this.game.currentPhase === 'placement' && this.game.selectedCharacterId) cell.classList.add('highlight');
                     const character = this.game.gameBoard[r][c];
                     if (character) {
                         cell.classList.add(character.owner === 'playerA' ? 'player-a' : 'player-b');
@@ -1024,10 +903,10 @@
             this.playerABanned.textContent = `禁用角色: ${this.game.playerA.bannedCharacter?.name || '尚未選擇'}`;
             this.playerBBanned.textContent = `禁用角色: ${this.game.playerB.bannedCharacter?.name || '尚未選擇'}`;
             this.playerACharacters.innerHTML = this.game.playerA.selectedCharacters.map(c => `
-                <div class="mini-character">${c.name} (HP: ${c.hp}/${c.maxHp})</div>
+                <div class="mini-character ${this.game.selectedCharacterId === c.id ? 'selected' : ''}" data-id="${c.id}">${c.name} (HP: ${c.hp}/${c.maxHp})</div>
             `).join('');
             this.playerBCharacters.innerHTML = this.game.playerB.selectedCharacters.map(c => `
-                <div class="mini-character">${c.name} (HP: ${c.hp}/${c.maxHp})</div>
+                <div class="mini-character ${this.game.selectedCharacterId === c.id ? 'selected' : ''}" data-id="${c.id}">${c.name} (HP: ${c.hp}/${c.maxHp})</div>
             `).join('');
         }
 
@@ -1042,11 +921,11 @@
             this.renderBoard();
             this.renderPlayerInfo();
 
-            const bannedIds = [this.game.playerA.bannedCharacter?.id, this.game.playerB.bannedCharacter?.id];
+            const bannedIds = [this.game.playerA.bannedCharacter?.id, this.game.playerB.bannedCharacter?.id].filter(id => id !== undefined);
             const selectedIds = [...this.game.playerA.selectedCharacters.map(c => c.id), ...this.game.playerB.selectedCharacters.map(c => c.id)];
-            this.banBtn.disabled = !(state.phase === 'ban' && this.game.selectedCharacter && !bannedIds.includes(this.game.selectedCharacter.id));
-            this.pickBtn.disabled = !(state.phase === 'pick' && this.game.selectedCharacter && !bannedIds.includes(this.game.selectedCharacter.id) && !selectedIds.includes(this.game.selectedCharacter.id));
-            this.placeBtn.disabled = !(state.phase === 'placement' && this.game.selectedCharacter);
+            this.banBtn.disabled = !(state.phase === 'ban' && this.game.selectedCharacterId && !bannedIds.includes(this.game.selectedCharacterId));
+            this.pickBtn.disabled = !(state.phase === 'pick' && this.game.selectedCharacterId && !bannedIds.includes(this.game.selectedCharacterId) && !selectedIds.includes(this.game.selectedCharacterId));
+            this.placeBtn.disabled = !(state.phase === 'placement' && this.game.selectedCharacterId);
             this.battleBtn.disabled = state.phase !== 'battle';
         }
     }
