@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>角色對弈遊戲</title>
     <style>
+        body {
             font-family: 'Arial', 'Microsoft JhengHei', sans-serif;
             background-color: #f0f0f0;
             margin: 0;
@@ -61,6 +62,7 @@
             padding: 10px;
             cursor: pointer;
             transition: transform 0.2s;
+            position: relative;
         }
         
         .character-card:hover {
@@ -231,15 +233,14 @@
             width: 80px;
             text-align: center;
             font-size: 0.8em;
+            cursor: pointer;
         }
         
         .mini-character.selected {
             background-color: #e6f7ff;
             border-color: #1890ff;
         }
-        .character-card {
-            position: relative;
-        }
+        
         .character-card .status {
             position: absolute;
             top: 5px;
@@ -247,6 +248,7 @@
             font-size: 0.8em;
             color: #666;
         }
+        
         .battle-log p {
             margin: 5px 0;
         }
@@ -299,7 +301,6 @@
     </div>
 
 <script>
-    // 角色對弈遊戲原型
     class Game {
         constructor() {
             this.characters = [];
@@ -592,30 +593,26 @@
             if (playerObj.placedCharacters[row][col] !== null) throw new Error("該位置已被佔用!");
             
             const character = playerObj.selectedCharacters[characterIndex];
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    if (playerObj.placedCharacters[r][c] === character) {
+                        throw new Error("該角色已經被佈置在棋盤上!");
+                    }
+                }
+            }
+            
             playerObj.placedCharacters[row][col] = character;
             
-            let allPlaced = true;
-            let placedCountA = 0;
-            for (let r = 0; r < 8; r++) {
-                for (let c = 0; c < 8; c++) {
-                    if (this.playerA.placedCharacters[r][c] !== null) placedCountA++;
-                }
-            }
-            
-            let placedCountB = 0;
-            for (let r = 0; r < 8; r++) {
-                for (let c = 0; c < 8; c++) {
-                    if (this.playerB.placedCharacters[r][c] !== null) placedCountB++;
-                }
-            }
-            
-            if (placedCountA < this.playerA.selectedCharacters.length || placedCountB < this.playerB.selectedCharacters.length) {
-                allPlaced = false;
-            }
-            
-            if (allPlaced) {
+            let placedCountA = this.playerA.selectedCharacters.filter(c => 
+                this.playerA.placedCharacters.some(row => row.includes(c))).length;
+            let placedCountB = this.playerB.selectedCharacters.filter(c => 
+                this.playerB.placedCharacters.some(row => row.includes(c))).length;
+
+            if (placedCountA === this.playerA.selectedCharacters.length && 
+                placedCountB === this.playerB.selectedCharacters.length) {
                 this.initializeBattle();
                 this.currentPhase = "battle";
+                return `${player === "playerA" ? this.playerA.name : this.playerB.name} 將 ${character.name} 佈置在位置 (${row}, ${col})! 所有角色已佈置完成，進入戰鬥階段！`;
             }
             
             return `${player === "playerA" ? this.playerA.name : this.playerB.name} 將 ${character.name} 佈置在位置 (${row}, ${col})!`;
@@ -686,6 +683,14 @@
                 if (character.stunned > 0) continue;
                 const skillResult = character.skill(character, allCharacters);
                 battleLog.push(skillResult);
+                
+                for (let i = allCharacters.length - 1; i >= 0; i--) {
+                    if (allCharacters[i].hp <= 0) {
+                        const deadChar = allCharacters.splice(i, 1)[0];
+                        this.gameBoard[deadChar.gridRow][deadChar.gridCol] = null;
+                        battleLog.push(`${deadChar.name} 已陣亡！`);
+                    }
+                }
             }
             
             const playerACharacters = allCharacters.filter(c => c.owner === "playerA" && c.hp > 0);
@@ -737,11 +742,22 @@
             this.gameBoard = new Array(8).fill().map(() => new Array(8).fill(null));
             this.battleTurn = 0;
             this.selectedCharacterId = null;
+            
+            this.characters.forEach(char => {
+                delete char.skillCooldown;
+                delete char.damageReduction;
+                delete char.physicalImmunity;
+                delete char.transformed;
+                delete char.sugarMarks;
+                delete char.stunned;
+                delete char.charmed;
+                delete char.attackReduction;
+            });
+            
             return "遊戲已重置!";
         }
     }
 
-    // 遊戲前端界面
     class GameFrontend {
         constructor() {
             this.game = new Game();
@@ -770,8 +786,9 @@
         setupEventListeners() {
             this.characterSelection.addEventListener('click', (e) => {
                 const card = e.target.closest('.character-card');
-                if (card && this.game.currentPhase !== 'placement') { // 在 ban 和 pick 階段允許選擇
-                    const id = parseInt(card.dataset.id);
+                if (!card || this.game.currentPhase === 'placement') return;
+                const id = parseInt(card.dataset.id);
+                if (!isNaN(id)) {
                     this.game.selectedCharacterId = id;
                     this.render();
                 }
@@ -885,7 +902,7 @@
                 card.dataset.id = character.id;
                 if (this.game.selectedCharacterId === character.id) card.classList.add('selected');
                 if (bannedIds.includes(character.id)) card.classList.add('banned');
-                if (selectedIds.includes(character.id) && this.game.currentPhase !== 'placement') card.style.display = 'none'; // 已選擇的角色在非佈置階段隱藏
+                if (selectedIds.includes(character.id) && this.game.currentPhase !== 'placement') card.style.display = 'none';
                 card.innerHTML = `
                     <div>${character.name} - ${character.title}</div>
                     <div>HP: ${character.hp}, 攻擊: ${character.attack}</div>
@@ -907,11 +924,13 @@
                     if (this.game.currentPhase === 'placement' && this.game.selectedCharacterId) cell.classList.add('highlight');
                     const character = this.game.gameBoard[r][c];
                     if (character) {
+                        const hpPercentage = (character.hp / character.maxHp) * 100;
                         cell.classList.add(character.owner === 'playerA' ? 'player-a' : 'player-b');
                         cell.innerHTML = `
                             <div class="character-on-board">
                                 <div class="name">${character.name}</div>
                                 <div class="hp">${character.hp}/${character.maxHp}</div>
+                                <div class="hp-bar"><div class="hp-bar-fill" style="width: ${hpPercentage}%"></div></div>
                             </div>
                         `;
                     }
@@ -951,7 +970,6 @@
         }
     }
 
-    // 啟動遊戲
     const gameFrontend = new GameFrontend();
 </script>
 </body>
