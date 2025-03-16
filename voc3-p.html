@@ -244,19 +244,19 @@
         </div>
         <div class="word-card fade-in">
             <p style="font-size: 1.5em; font-weight: bold;">
-                <span id="question">請選擇一種模式開始</span>
+                <span id="question">單字：</span>
                 <button class="tts-button" onclick="speakText(document.getElementById('question').textContent, 'en-US')">
                     <i class="fas fa-volume-up"></i>
                 </button>
             </p>
             <p>
-                <span id="definition"></span>
+                <span id="definition">英文定義：</span>
                 <button class="tts-button" onclick="speakText(document.getElementById('definition').textContent, 'en-US')">
                     <i class="fas fa-volume-up"></i>
                 </button>
             </p>
             <p>
-                <span id="chinese-definition"></span>
+                <span id="chinese-definition">中文定義：</span>
                 <button class="tts-button" onclick="speakText(document.getElementById('chinese-definition').textContent, 'zh-TW')">
                     <i class="fas fa-volume-up"></i>
                 </button>
@@ -447,9 +447,9 @@ const words = [
                 if (step <= 11 && currentIndex < words.length) {
                     let wordObj = words[currentIndex++];
                     currentSet.push(wordObj);
-                    document.getElementById("question").textContent = `單字: ${wordObj.word}`;
-                    document.getElementById("definition").textContent = `英文定義: ${wordObj.definition}`;
-                    document.getElementById("chinese-definition").textContent = `中文定義: ${wordObj.chinese}`;
+                    document.getElementById("question").textContent = ` ${wordObj.word}`;
+                    document.getElementById("definition").textContent = `${wordObj.definition}`;
+                    document.getElementById("chinese-definition").textContent = `${wordObj.chinese}`;
                     const memoryTip = document.getElementById("memory-tip");
                     memoryTip.style.display = "block";
                     memoryTip.textContent = wordObj.tip || "練習記憶這個單字的拼寫和含義";
